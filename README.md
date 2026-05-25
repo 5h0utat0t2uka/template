@@ -5,24 +5,7 @@ This document provides an example of a Vite + React + TypeScript project.
 ## プロジェクト作成
 1. テンプレートからリポジトリを作成
 ``` sh
-OWNER="<github_username>"
-REPO="<project_name>"
-```
-``` sh
-gh repo create ${REPO} \
-  --template 5h0utat0t2uka/template \
-  --public 
-```
-``` sh
-gh api \
-  --method PUT \
-  -H "Accept: application/vnd.github+json" \
-  "/repos/$OWNER/$REPO/actions/permissions/workflow" \
-  -f default_workflow_permissions=write \
-  -F can_approve_pull_request_reviews=true
-```
-``` sh
-gh api "/repos/$OWNER/$REPO/actions/permissions/workflow"
+nix run github:5h0utat0t2uka/template -- OWNER REPO public
 ```
 
 2. ローカルに`clone`
