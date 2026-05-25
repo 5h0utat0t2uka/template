@@ -30,6 +30,8 @@ gh api "/repos/$OWNER/$REPO/actions/permissions/workflow"
 mkdir -p ${REPO} && cd ${REPO}
 git clone git@github.com:${OWNER}/${REPO}.git .
 ```
+> [!NOTE]
+> `.github/dependabot.yml`の`open-pull-requests-limit: 0` を削除して有効化して`assignees`を適時変更
 
 3. `.envrc`を作成
 ``` sh

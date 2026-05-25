@@ -2,6 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
@@ -18,15 +19,14 @@ updates:
     assignees:
       - 5h0utat0t2uka
 
-updates:
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
       day: "sunday"
       time: "04:00"
       timezone: "Asia/Tokyo"
-    open-pull-requests-limit: 5
     labels:
       - "dependencies"
       - "npm"
