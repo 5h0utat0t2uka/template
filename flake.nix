@@ -104,9 +104,11 @@
       };
       devShells.default = pkgs.mkShell {
         packages = [
+          pkgs.age
           pkgs.gitleaks
           node.nodejs
           node.pnpm
+          pkgs.sops
           pkgs.typescript-language-server
           pkgs.zizmor
         ];

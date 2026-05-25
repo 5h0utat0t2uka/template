@@ -1,11 +1,10 @@
 # Frontend Template with Nix  
-This repository is a template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.
-This document provides an example of a Vite + React + TypeScript project.
+This repository is a template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
+This document provides an example of a Vite + React + TypeScript project.  
 
-> [!IMPORTANT]
-> REQUIREMENTS  
-> - Nix with flakes enabled  
-> - GitHub CLI (`gh`) authentication  
+**REQUIREMENTS**  
+- Nix with flakes enabled  
+- GitHub CLI (`gh`) authentication  
 
 If you have not authenticated GitHub CLI yet:
 ``` sh
