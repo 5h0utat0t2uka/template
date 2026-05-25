@@ -2,19 +2,32 @@
 This repository is a template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.
 This document provides an example of a Vite + React + TypeScript project.
 
-## プロジェクト作成
+> [!IMPORTANT]
+> REQUIREMENTS  
+> - Nix with flakes enabled  
+> - GitHub CLI (`gh`) authentication  
+
+If you have not authenticated GitHub CLI yet:
+``` sh
+nix shell nixpkgs#gh -c gh auth login
+```
+
+## プロジェクト作成・クローン
 1. テンプレートからリポジトリを作成
 ``` sh
+# クローンするディレクトリに移動
+cd path/to/parent-directory
+# OWNER: GitHubのユーザー名, REPO: 作成するリポジトリ名, public/privateを選択
 nix run github:5h0utat0t2uka/template -- OWNER REPO public
 ```
 
-2. ローカルに`clone`
+2. リポジトリに移動
 ``` sh
-mkdir -p ${REPO} && cd ${REPO}
-git clone git@github.com:${OWNER}/${REPO}.git .
+cd REPO
 ```
-> [!NOTE]
-> `.github/dependabot.yml`の`open-pull-requests-limit: 0` を削除して有効化して`assignees`を適時変更
+> [!TIP]
+> `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
+> `.github/dependabot.yml` の `assignees`を適時変更  
 
 3. `.envrc`を作成
 ``` sh
