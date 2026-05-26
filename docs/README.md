@@ -1,5 +1,6 @@
 # Frontend Template with Nix  
-Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
+Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm. 
+
 This template implements basic security measures, including dependency management with `dependabot`, static analysis of GitHub workflows with `zizmor`, secret detection with `gitLeaks`, and secret management with `age` and `sops`.
 
 ⚠️ **REQUIREMENTS**  
@@ -12,13 +13,14 @@ nix shell nixpkgs#gh -c gh auth login
 ```
 
 ## プロジェクト作成
+
+### 1. テンプレートからリポジトリを作成
 クローン先のディレクトリに移動
 ``` sh
 cd path/to/parent-directory
 ```
 
-### 1. テンプレートからリポジトリを作成
-`OWNER`: GitHubのユーザー名または組織名, `REPO`: 作成するリポジトリ名, `VISIBILITY`: `public`もしくは`privare` を指定してリポジトリを作成
+`OWNER`にGitHubのユーザー名または組織名, `REPO`に作成するリポジトリ名, `VISIBILITY`に`public`もしくは`privare` を指定してリポジトリを作成
 ``` sh
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ```
@@ -88,6 +90,19 @@ rmdir "$BACKUP_DIR"
 ``` json
 {
   "packageManager": "pnpm@10.33.2",
+}
+```
+
+`pnpm`のバージョンが`11.0.0`以降の場合
+``` json
+{
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": ">=11.0.0"
+      "onFail": "error"
+    }
+  }
 }
 ```
 
