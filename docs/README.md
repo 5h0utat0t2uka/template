@@ -1,30 +1,29 @@
 # Frontend Template with Nix  
-This repository is a template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
-This document provides an example of a Vite + React + TypeScript project.  
+Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
+This template implements basic security measures, including dependency management with `dependabot`, static analysis of GitHub workflows with `zizmor`, secret detection with `gitLeaks`, and secret management with `age` and `sops`.
 
-**REQUIREMENTS**  
+⚠️ **REQUIREMENTS**  
 - Nix with flakes enabled  
-- GitHub CLI (`gh`) authentication  
+- `gh` (GitHub CLI) authentication  
 
-If you have not authenticated GitHub CLI yet:
+If you have not authenticated `gh` yet:
 ``` sh
 nix shell nixpkgs#gh -c gh auth login
 ```
 
-## プロジェクト作成・クローン
-1. テンプレートからリポジトリを作成
+## プロジェクト作成
+クローン先のディレクトリに移動
 ``` sh
-# クローンするディレクトリに移動
 cd path/to/parent-directory
 ```
+
+### 1. テンプレートからリポジトリを作成
+`OWNER`: GitHubのユーザー名または組織名, `REPO`: 作成するリポジトリ名, `VISIBILITY`: `public`もしくは`privare` を指定してリポジトリを作成
 ``` sh
-# OWNER: GitHubのユーザー名または組織名 
-# REPO: 作成するリポジトリ名
-# VISIBILITY: public もしくは private
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ```
 
-2. リポジトリに移動
+### 2. リポジトリに移動
 ``` sh
 cd REPO
 ```
@@ -32,14 +31,14 @@ cd REPO
 > `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
 > `.github/dependabot.yml` の `assignees`を適時変更  
 
-3. `.envrc`を作成
+### 3. `.envrc`を作成
 ``` sh
 echo 'watch_dir nix
 watch_file pnpm-lock.yaml
 use flake' >> .envrc
 ```
 
-4. `.envrc`の許可
+### 4. `.envrc`の許可
 ``` sh
 direnv allow
 
@@ -48,8 +47,8 @@ node -v
 pnpm -v
 ```
 
-5. フレームワークのスキャフォールド
-`flake.nix`で定義した`writeShellApplication`を使用
+### 5. フレームワークのスキャフォールド  
+`flake.nix`の`writeShellApplication`で定義したコマンドを実行  
 
 > [!TIP]
 > Vite の場合 Ignore files and continue を選択
@@ -84,14 +83,15 @@ find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
 rmdir "$BACKUP_DIR"
 ```
 
-`package.json` の `packageManager` にpnpmのバージョンを追加
+### 6. `pnpm`のバージョンを指定
+`package.json` の `packageManager` に追記
 ``` json
 {
   "packageManager": "pnpm@10.33.2",
 }
 ```
 
-6. `.gitignore`に追記
+### 7. `.gitignore`に追記
 ``` sh
 echo '.direnv' >> .gitignore
 ```
