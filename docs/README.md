@@ -1,11 +1,15 @@
 # Frontend Template with Nix  
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm. 
+This template implements basic security measures, including Dependabot, zizmor, GitLeaks, and SOPS.  
 
-This template implements basic security measures, including dependency management with `dependabot`, static analysis of GitHub workflows with `zizmor`, secret detection with `gitLeaks`, and secret management with `age` and `sops`.
 
 ⚠️ **REQUIREMENTS**  
-- Nix with flakes enabled  
-- `gh` (GitHub CLI) authentication  
+- nix with flakes enabled  
+- `gh` authentication  
+
+If you have not installed Nix yet:
+- [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer)  
+- [Official Nix installer](https://github.com/NixOS/nix-installer)  
 
 If you have not authenticated `gh` yet:
 ``` sh
@@ -50,7 +54,7 @@ pnpm -v
 ```
 
 ### 5. フレームワークのスキャフォールド  
-`flake.nix`の`writeShellApplication`で定義したコマンドを実行  
+フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるので、下記のコマンドで一時的に既存ファイルを親ディレクトリに移動して、完了後に戻す薄いラッパースクリプトを実行   
 
 > [!TIP]
 > Vite の場合 Ignore files and continue を選択

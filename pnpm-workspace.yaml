@@ -4,6 +4,8 @@ packages:
 allowBuilds:
   esbuild: false
 
+blockExoticSubdeps: true
+
 verifyDepsBeforeRun: install
 
 trustPolicy: no-downgrade
