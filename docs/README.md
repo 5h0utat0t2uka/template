@@ -16,8 +16,12 @@ nix shell nixpkgs#gh -c gh auth login
 ``` sh
 # クローンするディレクトリに移動
 cd path/to/parent-directory
-# OWNER: GitHubのユーザー名, REPO: 作成するリポジトリ名, public/privateを選択
-nix run github:5h0utat0t2uka/template -- OWNER REPO public
+```
+``` sh
+# OWNER: GitHubのユーザー名または組織名 
+# REPO: 作成するリポジトリ名
+# VISIBILITY: public もしくは private
+nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ```
 
 2. リポジトリに移動
@@ -44,13 +48,42 @@ node -v
 pnpm -v
 ```
 
-5. `create vite`でreactのテンプレート作成
+5. フレームワークのスキャフォールド
+`flake.nix`で定義した`writeShellApplication`を使用
+
 > [!TIP]
-> Ignore files and continue を選択する
+> Vite の場合 Ignore files and continue を選択
 
 ``` sh
-pnpm create vite .
+# Vite
+nix run .#scaffold-app -- vite
+
+# Next.js
+nix run .#scaffold-app -- next
+
+# Astro
+nix run .#scaffold-app -- astro
 ```
+
+もしくは
+``` sh
+# プロジェクトルートにあるファイルを一時退避
+BACKUP_DIR="../.$(basename "$PWD")-template-backup-$(date +%s)"
+mkdir "$BACKUP_DIR"
+find . -mindepth 1 -maxdepth 1 \
+  ! -name .git \
+  -exec mv {} "$BACKUP_DIR/" \;
+
+# スキャフォールド
+# pnpm create next-app ., pnpm create astro ., pnpm create ...
+
+# 復元
+find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
+  -exec mv -n {} . \;
+
+rmdir "$BACKUP_DIR"
+```
+
 `package.json` の `packageManager` にpnpmのバージョンを追加
 ``` json
 {
@@ -58,7 +91,7 @@ pnpm create vite .
 }
 ```
 
-6. `.gitignore`に`.direnv`を追加
+6. `.gitignore`に追記
 ``` sh
 echo '.direnv' >> .gitignore
 ```
