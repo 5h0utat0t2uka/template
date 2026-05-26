@@ -1,10 +1,10 @@
 # Frontend Template with Nix  
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
-This template implements basic security measures, including Dependabot, zizmor, GitLeaks, and SOPS.  
+This template includes basic security measures that Dependabot, zizmor, GitLeaks, and SOPS encryption.  
 
 
 ⚠️ **REQUIREMENTS**  
-- nix with flakes enabled  
+- Nix with flakes enabled  
 - `gh` authentication  
 
 ❄️ If you have not installed Nix yet:
@@ -29,13 +29,22 @@ cd path/to/parent-directory
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ```
 
-### 2. リポジトリに移動
+### 2. プロジェクトの設定
 ``` sh
 cd REPO
 ```
-> [!TIP]
-> `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
-> `.github/dependabot.yml` の `assignees`を適時変更  
+
+- `nix/node.nix` の `nodeVersion`, `pnpmVersion` を適時変更  
+- `pnpm-workspace.yaml` の内容を適時変更  
+- Dependabotの設定  
+  - `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
+  - `.github/dependabot.yml` の `assignees`を適時変更  
+  - PRラベルの作成  
+  ``` sh
+  gh label create "dependencies" --color "#C7C7C7" 
+  gh label create "github-actions" --color "#474747" 
+  gh label create "npm" --color "#CC3534" 
+  ```
 
 ### 3. `.envrc`を作成
 ``` sh
@@ -89,7 +98,7 @@ find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
 rmdir "$BACKUP_DIR"
 ```
 
-### 6. `pnpm`のバージョンを指定
+### 6. `pnpm`のバージョンの明示
 `package.json` の `packageManager` に追記
 ``` json
 {
