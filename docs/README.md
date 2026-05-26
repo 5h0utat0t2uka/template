@@ -1,5 +1,5 @@
 # Frontend Template with Nix  
-Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm. 
+Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
 This template implements basic security measures, including Dependabot, zizmor, GitLeaks, and SOPS.  
 
 
@@ -7,11 +7,11 @@ This template implements basic security measures, including Dependabot, zizmor, 
 - nix with flakes enabled  
 - `gh` authentication  
 
-If you have not installed Nix yet:
+❄️ If you have not installed Nix yet:
 - [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer)  
 - [Official Nix installer](https://github.com/NixOS/nix-installer)  
 
-If you have not authenticated `gh` yet:
+🐙 If you have not authenticated `gh` yet:
 ``` sh
 nix shell nixpkgs#gh -c gh auth login
 ```
@@ -54,7 +54,7 @@ pnpm -v
 ```
 
 ### 5. フレームワークのスキャフォールド  
-フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるので、下記のコマンドで一時的に既存ファイルを親ディレクトリに移動して、完了後に戻す薄いラッパースクリプトを実行   
+フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるため、下記のコマンドで一時的に既存ファイルを親ディレクトリに退避させる薄いラッパースクリプトを実行   
 
 > [!TIP]
 > Vite の場合 Ignore files and continue を選択
@@ -72,17 +72,17 @@ nix run .#scaffold-app -- astro
 
 もしくは
 ``` sh
-# プロジェクトルートにあるファイルを一時退避
+# プロジェクトルートの既存ファイルを一時退避
 BACKUP_DIR="../.$(basename "$PWD")-template-backup-$(date +%s)"
 mkdir "$BACKUP_DIR"
 find . -mindepth 1 -maxdepth 1 \
   ! -name .git \
   -exec mv {} "$BACKUP_DIR/" \;
 
-# スキャフォールド
+# スキャフォールド実行
 # pnpm create next-app ., pnpm create astro ., pnpm create ...
 
-# 復元
+# 退避ファイルを戻す
 find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
   -exec mv -n {} . \;
 
