@@ -68,11 +68,8 @@ pnpm -v
 > [!TIP]
 > スクリプトの内容は [`nix/scaffold-app.nix`](../nix/scaffold-app.nix) を参照
 
-> [!TIP]
-> Vite の場合 Ignore files and continue を選択
-
 ``` sh
-# Vite
+# Vite (Select "Ignore files and continue" when prompted)
 nix run .#scaffold-app -- vite
 
 # Next.js
