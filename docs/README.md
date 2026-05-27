@@ -4,19 +4,19 @@ This template includes basic security measures that Dependabot, zizmor, GitLeaks
 
 
 # Requirements  
-- Nix with flakes enabled  
-  - If you have not installed Nix yet:  
-    Install via [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) or [Official Nix installer](https://github.com/NixOS/nix-installer)  
+- **Nix with flakes enabled**  
+  If you have not installed Nix yet:  
+  Install via [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) or [Official Nix installer](https://github.com/NixOS/nix-installer)  
 
-- `gh` authentication  
-  - If you have not authenticated `gh` yet:  
-    ``` sh
-    nix shell nixpkgs#gh -c gh auth login  
-    ```
+- **`gh` authentication**  
+  If you have not authenticated `gh` yet:  
+  ``` nix
+  nix shell nixpkgs#gh -c gh auth login  
+  ```
 
 ---
 
-## 1. テンプレートからリポジトリを作成
+## 1. リポジトリを作成
 クローン先のディレクトリに移動
 ``` sh
 cd path/to/parent-directory
@@ -63,7 +63,7 @@ node -v
 pnpm -v
 ```
 
-## 5. フレームワークのスキャフォールド  
+## 5. スキャフォールド  
 フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるため、下記のコマンドで一時的に既存ファイルを親ディレクトリに退避させる薄いラッパースクリプトを実行   
 
 > [!TIP]
@@ -99,7 +99,7 @@ find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
 rmdir "$BACKUP_DIR"
 ```
 
-## 6. `pnpm`のバージョンの明示
+## 6. `pnpm`バージョンの明示
 `package.json` の `packageManager` に追記
 ``` json
 {
