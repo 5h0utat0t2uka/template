@@ -31,11 +31,11 @@ nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 cd REPO
 ```
 
-- `nix/fixed-node.nix` の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
-- `pnpm-workspace.yaml` の内容をプロジェクトに合わせて変更  
+- [`nix/fixed-node.nix`](../nix/fixed-node.nix) の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
+- [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
-  - `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
-  - `.github/dependabot.yml` の `assignees`を変更  
+  - [`.github/dependabot.yml`](../.github/dependabot.yml) の `open-pull-requests-limit: 0` を削除して有効化  
+  - [`.github/dependabot.yml`](../.github/dependabot.yml) の `assignees`を変更  
   - PRラベルを作成  
   ``` sh
   gh label create "dependencies" --color "#C7C7C7" 
@@ -44,7 +44,7 @@ cd REPO
   ```
 
 > [!TIP]
-> PRのauto mergeを有効にする場合は`.github/dependabot.yml` の `automerged_updates` を設定  
+> 必要に応じて[PRのauto merge](https://docs.github.com/ja/code-security/tutorials/secure-your-dependencies/automating-dependabot-with-github-actions#enabling-automerge-on-a-pull-request)を有効にする  
 
 ## 3. `.envrc`を作成
 ``` sh
@@ -66,6 +66,9 @@ pnpm -v
 フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるため、下記のコマンドで一時的に既存ファイルを親ディレクトリに退避させる薄いラッパースクリプトを実行   
 
 > [!TIP]
+> スクリプトの内容は [`nix/scaffold-app.nix`](../nix/scaffold-app.nix) を参照
+
+> [!TIP]
 > Vite の場合 Ignore files and continue を選択
 
 ``` sh
@@ -77,25 +80,6 @@ nix run .#scaffold-app -- next
 
 # Astro
 nix run .#scaffold-app -- astro
-```
-
-もしくは
-``` sh
-# プロジェクトルートの既存ファイルを一時退避
-BACKUP_DIR="../.$(basename "$PWD")-template-backup-$(date +%s)"
-mkdir "$BACKUP_DIR"
-find . -mindepth 1 -maxdepth 1 \
-  ! -name .git \
-  -exec mv {} "$BACKUP_DIR/" \;
-
-# スキャフォールド実行
-# pnpm create next-app ., pnpm create astro ., pnpm create ...
-
-# 退避ファイルを戻す
-find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
-  -exec mv -n {} . \;
-
-rmdir "$BACKUP_DIR"
 ```
 
 ## 6. `pnpm`バージョンの明示
