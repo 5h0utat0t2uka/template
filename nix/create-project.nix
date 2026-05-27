@@ -32,6 +32,13 @@ pkgs.writeShellApplication {
       "$visibility_flag" \
       --clone
 
+    # Avoid running CI before project-specific setup is complete.
+    gh api \
+      --method PUT \
+      -H "Accept: application/vnd.github+json" \
+      -H "X-GitHub-Api-Version: 2026-03-10" \
+      "/repos/$OWNER/$REPO/actions/workflows/ci.yml/disable" || true
+
     # Keep default GITHUB_TOKEN permissions read-only.
     # Individual workflows/jobs should request write permissions explicitly when needed.
     gh api \

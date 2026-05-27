@@ -2,7 +2,6 @@
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
 This template includes basic security measures that Dependabot, zizmor, GitLeaks, and SOPS encryption.  
 
-
 # Requirements  
 - **Nix with flakes enabled**  
   If you have not installed Nix yet:  
@@ -33,6 +32,14 @@ cd REPO
 
 - [`nix/fixed-node.nix`](../nix/fixed-node.nix) の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
 - [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
+- [`CI`](../.github/workflows/ci.yml) を有効化  
+``` sh
+gh api \
+  --method PUT \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  "/repos/OWNER/REPO/actions/workflows/ci.yml/enable"
+```
 - Dependabotの設定  
   - [`.github/dependabot.yml`](../.github/dependabot.yml) の `open-pull-requests-limit: 0` を削除して有効化  
   - [`.github/dependabot.yml`](../.github/dependabot.yml) の `assignees`を変更  

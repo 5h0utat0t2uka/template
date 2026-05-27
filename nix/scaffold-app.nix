@@ -1,10 +1,10 @@
-{ pkgs, node }:
+{ pkgs, fixedNode }:
 
 pkgs.writeShellApplication {
   name = "scaffold-app";
   runtimeInputs = [
-    node.nodejs
-    node.pnpm
+    fixedNode.nodejs
+    fixedNode.pnpm
   ];
   text = ''
     set -euo pipefail
