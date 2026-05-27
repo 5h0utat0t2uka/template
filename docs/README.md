@@ -3,18 +3,18 @@ Template for setting up a development environment for front-end projects using d
 This template includes basic security measures that Dependabot, zizmor, GitLeaks, and SOPS encryption.  
 
 
-⚠️ **REQUIREMENTS**  
+# Requirements  
 - Nix with flakes enabled  
 - `gh` authentication  
 
-❄️ If you have not installed Nix yet:
-- [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer)  
-- [Official Nix installer](https://github.com/NixOS/nix-installer)  
+⚠️ If you have not installed Nix yet:  
+Install via [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) or [Official Nix installer](https://github.com/NixOS/nix-installer)  
 
-🐙 If you have not authenticated `gh` yet:
+⚠️ If you have not authenticated `gh` yet:  
 ``` sh
-nix shell nixpkgs#gh -c gh auth login
+nix shell nixpkgs#gh -c gh auth login  
 ```
+
 
 ## プロジェクト作成
 
@@ -34,17 +34,20 @@ nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 cd REPO
 ```
 
-- `nix/node.nix` の `nodeVersion`, `pnpmVersion` を適時変更  
-- `pnpm-workspace.yaml` の内容を適時変更  
+- `nix/node.nix` の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
+- `pnpm-workspace.yaml` の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
   - `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
-  - `.github/dependabot.yml` の `assignees`を適時変更  
-  - PRラベルの作成  
+  - `.github/dependabot.yml` の `assignees`を変更  
+  - PRラベルを作成  
   ``` sh
   gh label create "dependencies" --color "#C7C7C7" 
   gh label create "github-actions" --color "#474747" 
   gh label create "npm" --color "#CC3534" 
   ```
+
+> [!TIP]
+> PRのauto mergeを有効にする場合は`.github/dependabot.yml` の `automerged_updates` を設定  
 
 ### 3. `.envrc`を作成
 ``` sh
