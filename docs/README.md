@@ -5,20 +5,18 @@ This template includes basic security measures that Dependabot, zizmor, GitLeaks
 
 # Requirements  
 - Nix with flakes enabled  
+  - If you have not installed Nix yet:  
+    Install via [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) or [Official Nix installer](https://github.com/NixOS/nix-installer)  
+
 - `gh` authentication  
+  - If you have not authenticated `gh` yet:  
+    ``` sh
+    nix shell nixpkgs#gh -c gh auth login  
+    ```
 
-⚠️ If you have not installed Nix yet:  
-Install via [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) or [Official Nix installer](https://github.com/NixOS/nix-installer)  
+---
 
-⚠️ If you have not authenticated `gh` yet:  
-``` sh
-nix shell nixpkgs#gh -c gh auth login  
-```
-
-
-## プロジェクト作成
-
-### 1. テンプレートからリポジトリを作成
+## 1. テンプレートからリポジトリを作成
 クローン先のディレクトリに移動
 ``` sh
 cd path/to/parent-directory
@@ -29,7 +27,7 @@ cd path/to/parent-directory
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ```
 
-### 2. プロジェクトの設定
+## 2. プロジェクトの設定
 ``` sh
 cd REPO
 ```
@@ -49,14 +47,14 @@ cd REPO
 > [!TIP]
 > PRのauto mergeを有効にする場合は`.github/dependabot.yml` の `automerged_updates` を設定  
 
-### 3. `.envrc`を作成
+## 3. `.envrc`を作成
 ``` sh
 echo 'watch_dir nix
 watch_file pnpm-lock.yaml
 use flake' >> .envrc
 ```
 
-### 4. `.envrc`の許可
+## 4. `.envrc`の許可
 ``` sh
 direnv allow
 
@@ -65,7 +63,7 @@ node -v
 pnpm -v
 ```
 
-### 5. フレームワークのスキャフォールド  
+## 5. フレームワークのスキャフォールド  
 フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるため、下記のコマンドで一時的に既存ファイルを親ディレクトリに退避させる薄いラッパースクリプトを実行   
 
 > [!TIP]
@@ -101,7 +99,7 @@ find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
 rmdir "$BACKUP_DIR"
 ```
 
-### 6. `pnpm`のバージョンの明示
+## 6. `pnpm`のバージョンの明示
 `package.json` の `packageManager` に追記
 ``` json
 {
@@ -122,7 +120,7 @@ rmdir "$BACKUP_DIR"
 }
 ```
 
-### 7. `.gitignore`に追記
+## 7. `.gitignore`に追記
 ``` sh
 echo '.direnv' >> .gitignore
 ```
