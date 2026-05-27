@@ -14,7 +14,6 @@ This template includes basic security measures that Dependabot, zizmor, GitLeaks
   nix shell nixpkgs#gh -c gh auth login  
   ```
 
----
 
 ## 1. リポジトリを作成
 クローン先のディレクトリに移動
@@ -32,7 +31,7 @@ nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 cd REPO
 ```
 
-- `nix/node.nix` の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
+- `nix/fixed-node.nix` の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
 - `pnpm-workspace.yaml` の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
   - `.github/dependabot.yml` の `open-pull-requests-limit: 0` を削除して有効化  
@@ -58,7 +57,7 @@ use flake' >> .envrc
 ``` sh
 direnv allow
 
-# nodeとpnpmのバージョン確認
+# node と pnpm のバージョン確認
 node -v
 pnpm -v
 ```
@@ -121,6 +120,7 @@ rmdir "$BACKUP_DIR"
 ```
 
 ## 7. `.gitignore`に追記
+フレームワークにより生成される内容は異なるため、プロジェクトに合わせて調整  
 ``` sh
 echo '.direnv' >> .gitignore
 ```

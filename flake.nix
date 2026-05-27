@@ -10,12 +10,13 @@
   outputs = { nixpkgs, flake-utils, git-hooks, ... }: flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs { inherit system; };
-      node = import ./nix/node.nix { inherit nixpkgs system; };
+      fixedNode = import ./nix/fixed-node.nix { inherit pkgs system; };
       preCommit = import ./nix/pre-commit.nix { inherit pkgs git-hooks system; src = ./.; };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
-      scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs node; };
+      scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs fixedNode; };
     in
     {
+      formatter = pkgs.nixfmt;
       checks = {
         pre-commit = preCommit;
       };
@@ -35,10 +36,10 @@
       };
       devShells.default = pkgs.mkShell {
         packages = [
+          fixedNode.nodejs
+          fixedNode.pnpm
           pkgs.age
           pkgs.gitleaks
-          node.nodejs
-          node.pnpm
           pkgs.sops
           pkgs.typescript-language-server
           pkgs.zizmor

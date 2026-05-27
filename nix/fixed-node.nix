@@ -1,7 +1,6 @@
-{ nixpkgs, system }:
+{ pkgs, system }:
 
 let
-  pkgs = import nixpkgs { inherit system; };
   inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux isAarch64;
 
   nodeVersion = "24.16.0";
