@@ -28,18 +28,11 @@ nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
 ## 2. プロジェクトの設定
 ``` sh
 cd REPO
+git switch -c dev
 ```
 
 - [`nix/fixed-node.nix`](../nix/fixed-node.nix) の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
 - [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
-- [`CI`](../.github/workflows/ci.yml) を有効化  
-``` sh
-gh api \
-  --method PUT \
-  -H "Accept: application/vnd.github+json" \
-  -H "X-GitHub-Api-Version: 2026-03-10" \
-  "/repos/OWNER/REPO/actions/workflows/ci.yml/enable"
-```
 - Dependabotの設定  
   - [`.github/dependabot.yml`](../.github/dependabot.yml) の `open-pull-requests-limit: 0` を削除して有効化  
   - [`.github/dependabot.yml`](../.github/dependabot.yml) の `assignees`を変更  
@@ -114,5 +107,28 @@ nix run .#scaffold-app -- astro
 フレームワークにより生成される内容は異なるため、プロジェクトに合わせて調整  
 ``` sh
 echo '.direnv' >> .gitignore
+```
+
+## 8. リモートに反映  
+- コミットしてプッシュ  
+``` sh
+git add .
+git commit -m "setup project"
+git push -u origin dev
+gh pr create --base main --head dev --fill
+```
+
+- CI通過後に`main`にマージ  
+``` sh
+gh pr merge --squash
+```
+
+- `dev`ブランチを`main`に揃える  
+``` sh
+git switch main
+git pull --ff-only
+git switch dev
+git reset --hard main
+git push --force-with-lease
 ```
 
