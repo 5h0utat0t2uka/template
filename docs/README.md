@@ -46,7 +46,7 @@ git switch -c dev
 - [`nix/fixed-node.nix`](../nix/fixed-node.nix) の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
 - [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
-  - [`.github/dependabot.yml`](../.github/dependabot.yml) の `assignees`を変更  
+  - [`.github/dependabot.yml`](../.github/dependabot.yml.template) の `assignees`を変更  
   - PRラベルを作成  
   ``` sh
   gh label create "dependencies" --color "#C7C7C7" 
@@ -55,12 +55,12 @@ git switch -c dev
   gh label create "nix" --color "#4D6FB7" 
   ```
 
-Dependabot, CIの設定内容は下記  
+テンプレートのDependabot, CIの設定内容は下記  
 
-| File | Schedule | Description |
-|:---|:---|:---|
-| [`dependabot.yml`](../.github/dependabot.yml) | E/W on Sun at 4 AM     | GitHub Actions, npm, flake.lockに更新 |
-| [`ci.yml`](../.guthub/workflows/ci.yml)       | Pull Request to `main` | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 |
+| File | Schedule | Description | Auto merge |
+|:---|:---|:---|:---|
+| [`dependabot.yml`](../.github/dependabot.yml.templrte) | Sun at 4 AM  | GitHub Actions, npm, flake.lock のバージョンを更新してPR作成 | 未設定 |
+| [`ci.yml`](../.github/workflows/ci.yml)                | PR to `main` | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
 
 ## 3. `.envrc`を作成
 ``` sh
