@@ -10,6 +10,10 @@ This template includes basic security measures that Dependabot, OSV-Scanner, ziz
 - **`gh` authentication**  
   If you have not authenticated `gh` yet:  
   ``` nix
+  # Check authentication status 
+  nix shell nixpkgs#gh -c gh auth status  
+
+  # Run the following command to login
   nix shell nixpkgs#gh -c gh auth login  
   ```
 
@@ -59,8 +63,8 @@ git switch -c dev
 
 | File | Schedule | Description | Auto merge |
 |:---|:---|:---|:---|
-| [`dependabot.yml`](../.github/dependabot.yml.templrte) | Sun at 4 AM  | GitHub Actions, npm, flake.lock のバージョンを更新してPR作成 | 未設定 |
-| [`ci.yml`](../.github/workflows/ci.yml)                | PR to `main` | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
+| [`dependabot.yml`](../.github/dependabot.yml.templrte) | 毎週日曜日の AM 04:00 | GitHub Actions, npm, flake.lock のバージョンを更新してPR作成 | 未設定 |
+| [`ci.yml`](../.github/workflows/ci.yml)                | `main` ブランチへのPR | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
 
 ## 3. `.envrc`を作成
 ``` sh
