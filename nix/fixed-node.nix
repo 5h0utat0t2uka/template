@@ -22,7 +22,7 @@ let
     } else if isLinux then {
       slug = "linux-x64";
       ext = "tar.xz";
-      hash = "";
+      hash = "sha256-2ASEXTTt3CHcEJK1GdZD70Cx9Y7F3sXCKx9L2Pq95sk=";
     } else
       throw "Unsupported system: ${system}";
 

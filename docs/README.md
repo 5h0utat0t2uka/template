@@ -20,9 +20,17 @@ This template includes basic security measures that Dependabot, zizmor, GitLeaks
 cd path/to/parent-directory
 ```
 
-`OWNER`にGitHubのユーザー名または組織名, `REPO`に作成するリポジトリ名, `VISIBILITY`に`public`もしくは`privare` を指定してリポジトリを作成
+以下の引数を指定したコマンドでリポジトリを作成  
+
+| argument | required | default | description |
+|:---|:---|:---|:---|
+| `OWNER`          | required | -        | GitHub のユーザー名もしくは組織名 |
+| `REPO`           | required | -        | リポジトリ名 |
+| `VISIBILITY`     | optional | `public` | `public`, `private`, `internal` のいずれか |
+| `COPILOT_REVIEW` | optional | `false`  | `true`もしくは`false` |
+
 ``` sh
-nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY
+nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY COPILOT_REVIEW
 ```
 
 ## 2. プロジェクトの設定
@@ -34,13 +42,13 @@ git switch -c dev
 - [`nix/fixed-node.nix`](../nix/fixed-node.nix) の `nodeVersion`, `pnpmVersion` をプロジェクトに合わせて変更  
 - [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
-  - [`.github/dependabot.yml`](../.github/dependabot.yml) の `open-pull-requests-limit: 0` を削除して有効化  
   - [`.github/dependabot.yml`](../.github/dependabot.yml) の `assignees`を変更  
   - PRラベルを作成  
   ``` sh
   gh label create "dependencies" --color "#C7C7C7" 
   gh label create "github-actions" --color "#474747" 
   gh label create "npm" --color "#CC3534" 
+  gh label create "nix" --color "#4D6FB7" 
   ```
 
 > [!TIP]

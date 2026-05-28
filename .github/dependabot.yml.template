@@ -2,7 +2,6 @@ version: 2
 
 updates:
   - package-ecosystem: "github-actions"
-    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
@@ -17,10 +16,9 @@ updates:
     commit-message:
       prefix: "chore(actions)"
     assignees:
-      - 5h0utat0t2uka
+      - __ASSIGNEE__
 
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
@@ -31,6 +29,24 @@ updates:
       - "dependencies"
       - "npm"
     commit-message:
-      prefix: "chore(deps)"
+      prefix: "chore(npm)"
     assignees:
-      - 5h0utat0t2uka
+      - __ASSIGNEE__
+
+  - package-ecosystem: "nix"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "04:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
+    labels:
+      - "dependencies"
+      - "nix"
+    commit-message:
+      prefix: "chore(nix)"
+    assignees:
+      - __ASSIGNEE__
+

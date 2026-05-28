@@ -11,6 +11,7 @@ pkgs.writeShellApplication {
     OWNER="''${1:?OWNER is required}"
     REPO="''${2:?REPO is required}"
     VISIBILITY="''${3:-public}"
+    COPILOT_REVIEW="''${4:-false}"
     case "$VISIBILITY" in
       public)
         visibility_flag="--public"
@@ -23,6 +24,24 @@ pkgs.writeShellApplication {
         ;;
       *)
         echo "VISIBILITY must be public, private, or internal" >&2
+        exit 1
+        ;;
+    esac
+    case "$COPILOT_REVIEW" in
+      true)
+        copilot_code_review_rule=',{
+          "type": "copilot_code_review",
+          "parameters": {
+            "review_on_push": true,
+            "review_draft_pull_requests": false
+          }
+        }'
+        ;;
+      false)
+        copilot_code_review_rule=""
+        ;;
+      *)
+        echo "COPILOT_REVIEW must be true or false" >&2
         exit 1
         ;;
     esac
@@ -49,7 +68,7 @@ pkgs.writeShellApplication {
       -H "Accept: application/vnd.github+json" \
       -H "X-GitHub-Api-Version: 2026-03-10" \
       "/repos/$OWNER/$REPO/rulesets" \
-      --input - <<'JSON'
+      --input - <<JSON
     {
       "name": "main protection",
       "target": "branch",
@@ -86,73 +105,27 @@ pkgs.writeShellApplication {
         },
         {
           "type": "non_fast_forward"
-        },
-        {
-          "type": "copilot_code_review",
-          "parameters": {
-            "review_on_push": true,
-            "review_draft_pull_requests": false
-          }
-        }
+        }''${copilot_code_review_rule}
       ]
     }
     JSON
 
+    cd "$REPO"
+    git switch -c dev
+    if [ -f .github/dependabot.yml.template ]; then
+      sed "s|__ASSIGNEE__|$OWNER|g" .github/dependabot.yml.template > .github/dependabot.yml
+      rm .github/dependabot.yml.template
+      echo " Generated .github/dependabot.yml"
+    else
+      echo " .github/dependabot.yml.template not found; skipped dependabot.yml generation"
+    fi
     echo " Created and cloned: $OWNER/$REPO"
     echo " Configured workflow permissions and main branch ruleset"
-    echo " Next:"
+    echo " Created local dev branch"
+    echo ""
+    echo " Next step:"
     echo "  cd $REPO"
+    echo ""
   '';
 }
 
-# { pkgs }:
-#
-# pkgs.writeShellApplication {
-#   name = "create-project";
-#   runtimeInputs = with pkgs; [
-#     gh
-#     git
-#   ];
-#   text = ''
-#     set -euo pipefail
-#     OWNER="''${1:?OWNER is required}"
-#     REPO="''${2:?REPO is required}"
-#     VISIBILITY="''${3:-public}"
-#     case "$VISIBILITY" in
-#       public)
-#         visibility_flag="--public"
-#         ;;
-#       private)
-#         visibility_flag="--private"
-#         ;;
-#       internal)
-#         visibility_flag="--internal"
-#         ;;
-#       *)
-#         echo "VISIBILITY must be public, private, or internal" >&2
-#         exit 1
-#         ;;
-#     esac
-#     gh auth status >/dev/null
-#     gh repo create "$OWNER/$REPO" \
-#       --template 5h0utat0t2uka/template \
-#       "$visibility_flag" \
-#       --clone
-#     gh api \
-#       --method PUT \
-#       -H "Accept: application/vnd.github+json" \
-#       -H "X-GitHub-Api-Version: 2022-11-28" \
-#       "/repos/$OWNER/$REPO/actions/permissions/workflow" \
-#       -f default_workflow_permissions=write \
-#       -F can_approve_pull_request_reviews=false
-#     gh api \
-#       -H "Accept: application/vnd.github+json" \
-#       -H "X-GitHub-Api-Version: 2022-11-28" \
-#       "/repos/$OWNER/$REPO/actions/permissions/workflow"
-#
-#     echo " Created and cloned: $OWNER/$REPO"
-#     echo " Next:"
-#     echo "  cd $REPO"
-#   '';
-# }
-#
