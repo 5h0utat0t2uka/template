@@ -25,9 +25,9 @@ cd path/to/parent-directory
 | argument | required | default | description |
 |:---|:---|:---|:---|
 | `OWNER`          | required | -        | GitHub のユーザー名もしくは組織名 |
-| `REPO`           | required | -        | リポジトリ名 |
-| `VISIBILITY`     | optional | `public` | `public`, `private`, `internal` のいずれか |
-| `COPILOT_REVIEW` | optional | `false`  | `true`もしくは`false` |
+| `REPO`           | required | -        | GitHub のリポジトリ名 |
+| `VISIBILITY`     | optional | `public` | GitHub の可視性を `public`, `private`, `internal` のいずれかで指定 |
+| `COPILOT_REVIEW` | optional | `false`  | GitHub Copilot のレビュー可否を `true`もしくは`false` で指定 |
 
 ``` sh
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY COPILOT_REVIEW
