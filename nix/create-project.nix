@@ -97,7 +97,7 @@ pkgs.writeShellApplication {
             "strict_required_status_checks_policy": true,
             "do_not_enforce_on_create": true,
             "required_status_checks": [
-              { "context": "Dependency Review" },
+              { "context": "OSV Scanner / osv-scan" },
               { "context": "Pre-commit" },
               { "context": "Test" }
             ]

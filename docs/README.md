@@ -1,6 +1,6 @@
 # Frontend Template with Nix  
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
-This template includes basic security measures that Dependabot, zizmor, GitLeaks, and SOPS encryption.  
+This template includes basic security measures that Dependabot, OSV-Scanner, zizmor, GitLeaks, and SOPS encryption.  
 
 # Requirements  
 - **Nix with flakes enabled**  
@@ -20,9 +20,9 @@ This template includes basic security measures that Dependabot, zizmor, GitLeaks
 cd path/to/parent-directory
 ```
 
-以下の引数を指定したコマンドでリポジトリを作成  
+以下の引数を指定して`nix run`コマンドでリポジトリを作成  
 
-| argument | required | default | description |
+| Argument | Required | Default | Description |
 |:---|:---|:---|:---|
 | `OWNER`          | required | -        | GitHub のユーザー名もしくは組織名 |
 | `REPO`           | required | -        | GitHub のリポジトリ名 |
@@ -30,8 +30,12 @@ cd path/to/parent-directory
 | `COPILOT_REVIEW` | optional | `false`  | GitHub Copilot のレビュー可否を `true`もしくは`false` で指定 |
 
 ``` sh
+# リモートリポジトリの作成からクローンまでをまとめて実行
 nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY COPILOT_REVIEW
 ```
+
+> [!TIP]
+> スクリプトの内容は [`nix/create-project.nix`](../nix/create-project.nix) を参照
 
 ## 2. プロジェクトの設定
 ``` sh
@@ -51,8 +55,12 @@ git switch -c dev
   gh label create "nix" --color "#4D6FB7" 
   ```
 
-> [!TIP]
-> 必要に応じて[PRのauto merge](https://docs.github.com/ja/code-security/tutorials/secure-your-dependencies/automating-dependabot-with-github-actions#enabling-automerge-on-a-pull-request)を有効にする  
+Dependabot, CIの設定内容は下記  
+
+| File | Schedule | Description |
+|:---|:---|:---|
+| [`dependabot.yml`](../.github/dependabot.yml) | E/W on Sun at 4 AM     | GitHub Actions, npm, flake.lockに更新 |
+| [`ci.yml`](../.guthub/workflows/ci.yml)       | Pull Request to `main` | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 |
 
 ## 3. `.envrc`を作成
 ``` sh

@@ -15,25 +15,14 @@ permissions:
   contents: read
 
 jobs:
-  dependency-review:
-    name: Dependency Review
+  osv-scanner:
+    name: OSV Scanner
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-24.04
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable-pr.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
     permissions:
+      actions: read
       contents: read
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-
-      - name: Dependency Review
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: moderate
-          comment-summary-in-pr: always
-          license-check: false
+      security-events: write
 
   pre-commit:
     name: Pre-commit
@@ -47,8 +36,14 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@4eea0b33e3d1f02ecfe37cf16e7204c424009606 # v3.21.0
 
+      - name: Setup Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+
       - name: Run pre-commit
-        run: nix develop --command pre-commit run --all-files
+        run: nix build -L .#checks.x86_64-linux.pre-commit
+
+      # - name: Run pre-commit
+      #   run: nix develop --command pre-commit run --all-files
 
   test:
     name: Test
