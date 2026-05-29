@@ -139,11 +139,11 @@ echo '.direnv
 git add .
 git commit -m "setup project"
 git push -u origin dev
-gh pr create --base main --head dev --fill
 ```
 
 - PR作成後`main`にマージ  
 ``` sh
+gh pr create --base main --head dev --fill
 gh pr merge --squash
 ```
 
@@ -153,5 +153,6 @@ git switch main
 git pull --ff-only origin main
 git switch dev
 git merge main
+git push --force-with-lease
 ```
 
