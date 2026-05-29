@@ -24,7 +24,12 @@ This template includes basic security measures that Dependabot, OSV-Scanner, ziz
 cd path/to/parent-directory
 ```
 
-以下の引数を指定して`nix run`コマンドでリポジトリを作成  
+以下のコマンドでリポジトリを作成  
+``` sh
+nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY COPILOT_REVIEW
+```
+
+引数の内容は下記  
 
 | Argument | Required | Default | Description |
 |:---|:---|:---|:---|
@@ -32,11 +37,6 @@ cd path/to/parent-directory
 | `REPO`           | required | -        | GitHub のリポジトリ名 |
 | `VISIBILITY`     | optional | `public` | GitHub の可視性を `public`, `private`, `internal` のいずれかで指定 |
 | `COPILOT_REVIEW` | optional | `false`  | GitHub Copilot のレビュー可否を `true`もしくは`false` で指定 |
-
-``` sh
-# リモートリポジトリの作成からクローンまでをまとめて実行
-nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY COPILOT_REVIEW
-```
 
 > [!TIP]
 > スクリプトの内容は [`nix/create-project.nix`](../nix/create-project.nix) を参照
