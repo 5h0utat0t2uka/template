@@ -134,7 +134,7 @@ echo '.direnv
 ```
 
 ## 8. リモートに反映  
-- コミットしてプッシュ  
+- `dev`にコミットしてプッシュ  
 ``` sh
 git add .
 git commit -m "setup project"
@@ -142,12 +142,12 @@ git push -u origin dev
 gh pr create --base main --head dev --fill
 ```
 
-- CI通過後に`main`にマージ  
+- PR作成後`main`にマージ  
 ``` sh
 gh pr merge --squash
 ```
 
-- `dev`ブランチを`main`に揃える  
+- ローカルをリモートの`main`に揃える  
 ``` sh
 git switch main
 git pull --ff-only origin main
