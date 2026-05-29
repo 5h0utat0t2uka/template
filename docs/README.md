@@ -1,6 +1,13 @@
 # Frontend Template with Nix  
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
-This template includes basic security measures that Dependabot, OSV-Scanner, zizmor, GitLeaks, and SOPS encryption.  
+
+This template includes basic security measures:  
+- **Dependabot** for dependency auto updates  
+- **OSV-Scanner** for existing vulnerability scanning  
+- **zizmor** for GitHub Actions static analysis  
+~~ - **GitLeaks** for secret scanning ~~  
+- **Betterleaks** for secret scanning  
+- **SOPS** for secret encryption  
 
 # Requirements  
 - **Nix with flakes enabled**  

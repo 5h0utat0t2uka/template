@@ -9,12 +9,18 @@ git-hooks.lib.${system}.run {
       enable = true;
       args = [ "--maxkb=500" ];
     };
-    gitleaks = {
+    betterleaks = {
       enable = true;
-      name = "gitleaks";
-      entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
+      name = "betterleaks";
+      entry = "${pkgs.betterleaks}/bin/betterleaks git --pre-commit --redact --staged --verbose";
       pass_filenames = false;
     };
+    # gitleaks = {
+    #   enable = true;
+    #   name = "gitleaks";
+    #   entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
+    #   pass_filenames = false;
+    # };
     zizmor = {
       enable = true;
       name = "zizmor";
