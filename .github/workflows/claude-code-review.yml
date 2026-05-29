@@ -1,0 +1,51 @@
+name: Claude Code Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "レビュー対象の PR 番号"
+        required: true
+        type: number
+
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  #   paths-ignore:
+  #     - "**.md"
+  #     - "docs/**"
+
+permissions: {}
+
+concurrency:
+  group: claude-code-review-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  code-review:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.user.login != 'dependabot[bot]' &&
+       github.event.pull_request.draft == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: anthropics/claude-code-action@787c5a0ce96a9a6cfb050ea0c8f4c05f2447c251 # v1.0.133
+        with:
+          # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+
+            この PR の一般的なコードレビューを行い、結果を PR にコメントしてください。
+            ## チェック項目
+            - バグ・ロジックの誤り
+            - 型安全性（TypeScript）
+            - セキュリティ上の問題（XSS、インジェクション、シークレットの混入など）
+            - アクセシビリティ（ARIA、フォーカス管理、コントラスト）
+            - パフォーマンス上の懸念
+          claude_args: "--max-turns 5"
+

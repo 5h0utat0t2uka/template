@@ -2,6 +2,7 @@
 Template for setting up a development environment for front-end projects using direnv, flake.nix, and pnpm.  
 This template includes basic security measures:  
 - [Dependabot](https://docs.github.com/ja/code-security/tutorials/secure-your-dependencies/dependabot-quickstart-guide) for dependency auto updates  
+- [GitHub Copilot](https://github.com/features/copilot) for code review with GitHub Copilot (optional)
 - [OSV-Scanner](https://github.com/google/osv-scanner) for existing vulnerability scanning  
 - [zizmor](https://github.com/zizmorcore/zizmor) for GitHub Actions static analysis  
 - [Betterleaks](https://github.com/betterleaks/betterleaks) for secret scanning  

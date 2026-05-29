@@ -1,0 +1,50 @@
+name: Claude Security Review (Dependabot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "レビュー対象の PR 番号（Dependabot の更新 PR）"
+        required: true
+        type: number
+
+permissions: {}
+
+concurrency:
+  group: claude-security-review-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  security-review:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.user.login == 'dependabot[bot]' &&
+       github.event.pull_request.draft == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: anthropics/claude-code-action@787c5a0ce96a9a6cfb050ea0c8f4c05f2447c251 # v1.0.133
+        with:
+          # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+
+            この PR は Dependabot による pnpm 依存関係の更新です。
+            **依存パッケージのインストールや任意コードの実行は一切行わず**、
+            pnpm-lock.yaml の差分を静的に確認してレビューしてください。
+            pnpm-lock.yaml 以外の変更が含まれる場合はその旨を明記してください。
+
+            ## チェック項目
+            - パッケージ名のタイポスクワッティング（例: lodash → 1odash）
+            - 既知のマルウェア・サプライチェーン攻撃の報告
+            - postinstall / preinstall など lifecycle scripts の不審な追加・変更
+            - 想定外の依存ツリーの変化（新規の推移的依存の追加）
+            - メンテナー変更や公開元の変化を示唆する不自然なバージョン履歴
+
+            問題があれば重大度（Critical / High / Medium）を明記し、結果を PR にコメントしてください。
+          claude_args: "--max-turns 10"
