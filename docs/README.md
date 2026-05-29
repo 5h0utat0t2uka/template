@@ -128,7 +128,9 @@ nix run .#scaffold-app -- astro
 ## 7. `.gitignore`に追記
 フレームワークにより生成される内容は異なるため、プロジェクトに合わせて調整  
 ``` sh
-echo '.direnv' >> .gitignore
+echo '.direnv
+.pre-commit-config.yaml
+.env' >> .gitignore
 ```
 
 ## 8. リモートに反映  
@@ -148,9 +150,8 @@ gh pr merge --squash
 - `dev`ブランチを`main`に揃える  
 ``` sh
 git switch main
-git pull --ff-only
+git pull --ff-only origin main
 git switch dev
-git reset --hard main
-git push --force-with-lease
+git merge main
 ```
 
