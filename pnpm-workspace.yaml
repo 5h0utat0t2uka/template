@@ -3,6 +3,8 @@ packages:
 
 allowBuilds:
   esbuild: false
+  sharp: false
+  unrs-resolver: false
 
 blockExoticSubdeps: true
 
