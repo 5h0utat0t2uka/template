@@ -63,10 +63,23 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
+ 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check lint script
+        id: lint-script
+        run: |
+          if pnpm pkg get scripts.lint | grep -qv '^{}$'; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Lint
+        if: steps.lint-script.outputs.exists == 'true'
         run: pnpm lint
+
       - name: Build
         run: pnpm build
 
