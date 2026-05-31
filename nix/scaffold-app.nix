@@ -25,7 +25,6 @@ pkgs.writeShellApplication {
         ;;
     esac
 
-    # 退避先を親ディレクトリに作成
     PROJECT_DIR="$PWD"
     PROJECT_NAME="$(basename "$PROJECT_DIR")"
     BACKUP_DIR="$(cd .. && pwd)/.''${PROJECT_NAME}-template-backup-$(date +%s)"
@@ -36,16 +35,26 @@ pkgs.writeShellApplication {
     mkdir "$BACKUP_DIR"
     restore() {
       if [ -d "$BACKUP_DIR" ]; then
-        find "$BACKUP_DIR" -mindepth 1 -maxdepth 1 \
-          -exec mv -n {} "$PROJECT_DIR/" \;
+        for path in "$BACKUP_DIR"/* "$BACKUP_DIR"/.[!.]* "$BACKUP_DIR"/..?*; do
+          [ -e "$path" ] || continue
+          filename="$(basename "$path")"
+          destination="$PROJECT_DIR/$filename"
+          if [ -e "$destination" ]; then
+            echo " $filename is duplicate, check the contents and merge them." >&2
+            continue
+          fi
+          mv "$path" "$PROJECT_DIR/"
+        done
         rmdir "$BACKUP_DIR" 2>/dev/null || \
           echo "Warning: $BACKUP_DIR is not empty. Inspect remaining files manually." >&2
       fi
     }
+
     trap restore EXIT
     find "$PROJECT_DIR" -mindepth 1 -maxdepth 1 \
       ! -name .git \
       -exec mv {} "$BACKUP_DIR/" \;
+
     case "$FRAMEWORK" in
       next)
         pnpm create next-app@latest .
