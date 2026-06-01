@@ -39,7 +39,6 @@
           fixedNode.nodejs
           fixedNode.pnpm
           pkgs.age
-          # pkgs.gitleaks
           pkgs.betterleaks
           pkgs.sops
           pkgs.typescript-language-server
