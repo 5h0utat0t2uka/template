@@ -28,11 +28,13 @@ pkgs.writeShellApplication {
     PROJECT_DIR="$PWD"
     PROJECT_NAME="$(basename "$PROJECT_DIR")"
     BACKUP_DIR="$(cd .. && pwd)/.''${PROJECT_NAME}-template-backup-$(date +%s)"
+    SKIPPED_DUPLICATES_FILE="$(mktemp)"
     if [ -e "$BACKUP_DIR" ]; then
       echo "Error: $BACKUP_DIR already exists." >&2
       exit 1
     fi
     mkdir "$BACKUP_DIR"
+
     restore() {
       if [ -d "$BACKUP_DIR" ]; then
         for path in "$BACKUP_DIR"/* "$BACKUP_DIR"/.[!.]* "$BACKUP_DIR"/..?*; do
@@ -40,17 +42,23 @@ pkgs.writeShellApplication {
           filename="$(basename "$path")"
           destination="$PROJECT_DIR/$filename"
           if [ -e "$destination" ]; then
-            echo " $filename is duplicate, check the contents and merge them." >&2
+            printf '%s\n' "$filename" >> "$SKIPPED_DUPLICATES_FILE"
+            rm -rf "$path"
             continue
           fi
           mv "$path" "$PROJECT_DIR/"
         done
-        rmdir "$BACKUP_DIR" 2>/dev/null || \
-          echo "Warning: $BACKUP_DIR is not empty. Inspect remaining files manually." >&2
+        rm -rf "$BACKUP_DIR"
+        if [ -s "$SKIPPED_DUPLICATES_FILE" ]; then
+          echo " Some template files were not restored because scaffold generated files with the same names:" >&2
+          sed 's/^/  - /' "$SKIPPED_DUPLICATES_FILE" >&2
+          echo " The generated files were kept, and the template versions were discarded." >&2
+        fi
       fi
+      rm -f "$SKIPPED_DUPLICATES_FILE"
     }
 
-    trap restore EXIT
+    trap 'status=$?; restore; exit "$status"' EXIT
     find "$PROJECT_DIR" -mindepth 1 -maxdepth 1 \
       ! -name .git \
       -exec mv {} "$BACKUP_DIR/" \;
@@ -63,6 +71,9 @@ pkgs.writeShellApplication {
         pnpm create astro@latest .
         ;;
     esac
+    status=$?
+    trap - EXIT
+    restore
+    exit "$status"
   '';
 }
-
