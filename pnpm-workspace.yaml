@@ -11,12 +11,12 @@ blockExoticSubdeps: true
 verifyDepsBeforeRun: install
 
 trustPolicy: no-downgrade
-trustPolicyExclude:
-  - semver@6.3.1
+# trustPolicyExclude:
+#   - semver@6.3.1
 
 minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
-  - react
-  - react-dom
-  - "@types/react"
-  - "@types/react-dom"
+# minimumReleaseAgeExclude:
+#   - react
+#   - react-dom
+#   - "@types/react"
+#   - "@types/react-dom"
