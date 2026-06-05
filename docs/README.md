@@ -57,7 +57,7 @@ git switch -c dev
 - [`pnpm-workspace.yaml`](../pnpm-workspace.yaml) の内容をプロジェクトに合わせて変更  
 - Dependabotの設定  
   - [`.github/dependabot.yml`](../.github/dependabot.yml.template) の `assignees`を変更  
-  - PRラベルを作成  
+  - PRラベルを作成:  
   ``` sh
   gh label create "dependencies" --color "#C7C7C7" 
   gh label create "github-actions" --color "#474747" 
