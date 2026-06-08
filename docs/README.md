@@ -76,6 +76,7 @@ git switch -c dev
 ``` sh
 echo 'watch_dir nix
 watch_file pnpm-lock.yaml
+watch_file pnpm-workspace.yaml
 use flake' >> .envrc
 ```
 
