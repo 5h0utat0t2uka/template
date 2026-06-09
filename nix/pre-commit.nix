@@ -15,12 +15,6 @@ git-hooks.lib.${system}.run {
       entry = "${pkgs.betterleaks}/bin/betterleaks git --pre-commit --redact --staged --verbose";
       pass_filenames = false;
     };
-    # gitleaks = {
-    #   enable = true;
-    #   name = "gitleaks";
-    #   entry = "${pkgs.gitleaks}/bin/gitleaks git --pre-commit --redact --staged --verbose";
-    #   pass_filenames = false;
-    # };
     zizmor = {
       enable = true;
       name = "zizmor";
