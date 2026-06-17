@@ -40,6 +40,7 @@
           fixedNode.pnpm
           pkgs.age
           pkgs.betterleaks
+          pkgs.semgrep
           pkgs.sops
           pkgs.typescript-language-server
           pkgs.zizmor

@@ -15,6 +15,12 @@ git-hooks.lib.${system}.run {
       entry = "${pkgs.betterleaks}/bin/betterleaks git --pre-commit --redact --staged --verbose";
       pass_filenames = false;
     };
+    semgrep = {
+      enable = true;
+      name = "semgrep";
+      entry = "${pkgs.semgrep}/bin/semgrep --config=auto --metrics=off --error";
+      pass_filenames = true;
+    };
     zizmor = {
       enable = true;
       name = "zizmor";
