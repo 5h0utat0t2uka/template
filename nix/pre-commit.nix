@@ -24,13 +24,9 @@ git-hooks.lib.${system}.run {
     zizmor = {
       enable = true;
       name = "zizmor";
-      entry = "${pkgs.writeShellScript "zizmor-hook" ''
-        if [ -d .github/workflows ]; then
-          exec ${pkgs.zizmor}/bin/zizmor .github/workflows
-        fi
-      ''}";
+      entry = "${pkgs.zizmor}/bin/zizmor .github/workflows";
+      files = "^\\.github/(workflows|actions)/.*";
       pass_filenames = false;
-      always_run = true;
     };
   };
 }
