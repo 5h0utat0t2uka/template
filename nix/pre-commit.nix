@@ -1,4 +1,4 @@
-{ pkgs, git-hooks, system, src, fixedNode }:
+{ pkgs, git-hooks, system, fixedNode, src }:
 
 git-hooks.lib.${system}.run {
   inherit src;
