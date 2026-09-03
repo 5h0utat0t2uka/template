@@ -40,6 +40,7 @@
           fixedNode.pnpm
           pkgs.age
           pkgs.betterleaks
+          pkgs.prek
           pkgs.semgrep
           pkgs.sops
           pkgs.typescript-language-server
@@ -54,4 +55,3 @@
     }
   );
 }
-

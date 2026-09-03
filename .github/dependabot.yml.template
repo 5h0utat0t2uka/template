@@ -10,6 +10,10 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
+    groups:
+      github-actions:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "github-actions"
@@ -19,7 +23,8 @@ updates:
       - __ASSIGNEE__
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directories:
+      - "/"
     schedule:
       interval: "weekly"
       day: "sunday"
@@ -27,6 +32,15 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "@types/node"
+        update-types:
+          - "version-update:semver-major"
     labels:
       - "dependencies"
       - "npm"
@@ -44,6 +58,10 @@ updates:
       timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
+    groups:
+      nix-inputs:
+        patterns:
+          - "*"
     labels:
       - "dependencies"
       - "nix"
@@ -51,4 +69,3 @@ updates:
       prefix: "chore(nix)"
     assignees:
       - __ASSIGNEE__
-

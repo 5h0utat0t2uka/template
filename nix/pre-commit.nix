@@ -1,7 +1,8 @@
-{ pkgs, git-hooks, system, src }:
+{ pkgs, git-hooks, system, src, fixedNode }:
 
 git-hooks.lib.${system}.run {
   inherit src;
+  package = pkgs.prek;
   hooks = {
     detect-private-keys.enable = true;
     check-merge-conflicts.enable = true;
@@ -9,6 +10,19 @@ git-hooks.lib.${system}.run {
       enable = true;
       args = [ "--maxkb=500" ];
     };
+    node-tests = {
+      enable = true;
+      name = "node-test";
+      entry = "${fixedNode.pnpm}/bin/pnpm test";
+      files = "^(apps|packages)/.*\\.tsx?$";
+      pass_filenames = false;
+    };
+    # biome = {
+    #   enable = true;
+    #   name = "biome";
+    #   entry = "${pkgs.biome}/bin/biome check --write --files-ignore-unknown=true --no-errors-on-unmatched";
+    #   pass_filenames = true;
+    # };
     betterleaks = {
       enable = true;
       name = "betterleaks";
@@ -18,13 +32,13 @@ git-hooks.lib.${system}.run {
     semgrep = {
       enable = true;
       name = "semgrep";
-      entry = "${pkgs.semgrep}/bin/semgrep --config=auto --metrics=off --error";
-      pass_filenames = true;
+      entry = "${pkgs.semgrep}/bin/semgrep --config=p/default --config=p/typescript --config=p/javascript --config=p/react --metrics=off --error .";
+      pass_filenames = false;
     };
     zizmor = {
       enable = true;
       name = "zizmor";
-      entry = "${pkgs.zizmor}/bin/zizmor .github/workflows";
+      entry = "${pkgs.zizmor}/bin/zizmor --collect=workflows,actions .";
       files = "^\\.github/(workflows|actions)/.*";
       pass_filenames = false;
     };
