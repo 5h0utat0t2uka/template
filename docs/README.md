@@ -147,15 +147,16 @@ git push -u origin dev
 - PR作成後`main`にマージ  
 ``` sh
 gh pr create --base main --head dev --fill
-gh pr merge --squash
+gh pr checks --watch
+gh pr merge --squash --delete-branch
 ```
 
 - ローカルをリモートの`main`に揃える  
 ``` sh
 git switch main
-git pull --ff-only origin main
-git switch dev
-git merge main
-git push --force-with-lease
+git pull --ff-only --prune origin main
 ```
-
+``` sh
+git fetch --prune origin
+git switch -c <branch-name> origin/main
+```
