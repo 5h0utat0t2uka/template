@@ -82,8 +82,7 @@ pkgs.writeShellApplication {
                   strict_required_status_checks_policy: true,
                   do_not_enforce_on_create: true,
                   required_status_checks: [
-                    { context: "OSV Scanner / osv-scan" },
-                    { context: "Pre-commit" },
+                    { context: "OSV Scanner" },
                     { context: "Test" }
                   ]
                 }
@@ -127,7 +126,7 @@ pkgs.writeShellApplication {
     else
       echo " Skipped repository ruleset: private/internal repositories require GitHub Pro/Team/Enterprise or public visibility."
     fi
-    
+
     cd "$REPO"
     git switch -c dev
     if [ -f .github/dependabot.yml.template ]; then
@@ -151,4 +150,3 @@ pkgs.writeShellApplication {
     echo ""
   '';
 }
-
