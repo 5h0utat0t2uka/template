@@ -155,8 +155,8 @@ gh pr merge --squash --delete-branch
 ``` sh
 git switch main
 git pull --ff-only --prune origin main
+git fetch --prune origin
 ```
 ``` sh
-git fetch --prune origin
 git switch -c <branch-name> origin/main
 ```
