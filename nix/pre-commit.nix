@@ -20,6 +20,7 @@ git-hooks.lib.${system}.run {
     # biome = {
     #   enable = true;
     #   name = "biome";
+    #   package = pkgs.biome;
     #   entry = "${pkgs.biome}/bin/biome check --write --files-ignore-unknown=true --no-errors-on-unmatched";
     #   pass_filenames = true;
     # };

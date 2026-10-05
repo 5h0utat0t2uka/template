@@ -45,7 +45,7 @@
           pkgs.sops
           pkgs.typescript-language-server
           pkgs.zizmor
-        ];
+        ] ++ preCommit.enabledPackages;
         shellHook = ''
           ${preCommit.shellHook}
           echo "node: $(node -v)"

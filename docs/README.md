@@ -105,7 +105,26 @@ nix run .#scaffold-app -- next
 
 # Astro
 nix run .#scaffold-app -- astro
+
+# TanStack Start (React / blank)
+nix run .#scaffold-app -- tanstack
 ```
+
+<!--TanStack Start は [`--blank`](https://tanstack.com/cli/latest/docs/cli-reference) で最小構成を生成し、のアドオンは追加しない  
+依存関係のインストール後、`pnpm dlx @tanstack/intent@latest install --map` で [TanStack Intent](https://tanstack.com/intent/latest/docs/overview) の Agent Skills を設定します。インストール済みライブラリを対象に、`AGENTS.md` などへ Skills の読み込み案内とタスクとの対応付けを追加します。生成中は `--no-install` を使うため、`--intent` による設定はこの段階まで待ちます。Intent の設定が失敗した場合も停止するため、原因を解消してこのコマンドを再実行してください。
+
+TanStack の生成先は一時ディレクトリです。既存ファイルを保持して生成物を取り込み、`.gitignore` は追記で統合します。`package.json` または `pnpm-lock.yaml` がある場合は上書きを避けるため停止します。
+
+`pnpm-workspace.yaml` は生成されたものを採用せず、このテンプレートの設定を維持します。`allowBuilds` を変更せず、`minimumReleaseAge: 10080`（7日）と `trustPolicy: no-downgrade` を適用します。`semver@6.3.1` の例外は、同ファイルに記載した上流の provenance の問題に対応するものです。
+
+固定した pnpm のバージョンを `packageManager` に設定し、`@types/node` のメジャーバージョンを固定した Node.js に合わせます。その後、Start と Router の v1 から公開後の待機期間を満たすバージョンを解決して完全固定し、ロックファイルを作成して `pnpm install --frozen-lockfile` を実行します。他の依存関係も含め、[pnpm のポリシー](https://pnpm.io/10.x/settings)を満たせなければ設定を緩和せずに停止します。依存解決・インストールで停止した場合、生成済みファイルは残るため、原因を解消してその段階のコマンドから再開してください。
+
+TanStack では手順6・7も自動で反映します。生成後は次のコマンドで動作を確認してください。
+
+``` sh
+nix develop -c pnpm run build
+nix develop -c pnpm run dev
+```-->
 
 ## 6. `pnpm`バージョンの明示
 `package.json` の `packageManager` に追記

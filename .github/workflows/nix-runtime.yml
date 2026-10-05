@@ -37,8 +37,5 @@ jobs:
       - name: Install dependencies
         run: nix develop -c pnpm install --frozen-lockfile
 
-      - name: Prepare tracking assets
-        run: nix develop -c pnpm setup:tracking
-
       - name: Build
         run: nix develop -c pnpm build
