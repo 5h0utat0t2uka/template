@@ -1,3 +1,13 @@
+/**
+  to get the hash of nodejs, run the following command in your terminal:
+
+  for slug in darwin-arm64 darwin-x64 linux-arm64:tar.xz linux-x64:tar.xz; do
+    v=24.21.0; p="${slug%%:*}"; ext="${slug#*:}"; [ "$ext" = "$p" ] && ext=tar.gz
+    nix store prefetch-file --json \
+      "https://nodejs.org/dist/v${v}/node-v${v}-${p}.${ext}" | jq -r '.hash'
+  done
+*/
+
 { pkgs, system }:
 
 let
