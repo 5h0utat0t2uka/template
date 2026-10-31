@@ -76,6 +76,7 @@ git switch -c dev
 ## 3. `.envrc`を作成
 ``` sh
 echo 'watch_dir nix
+watch_file package.json
 watch_file pnpm-lock.yaml
 watch_file pnpm-workspace.yaml
 use flake' >> .envrc
@@ -126,22 +127,40 @@ nix develop -c pnpm run build
 nix develop -c pnpm run dev
 ```-->
 
-## 6. `pnpm`バージョンの明示
-`package.json` の `packageManager` に追記
-``` json
-{
-  "packageManager": "pnpm@10.33.2",
-}
-```
+## 6. `node`, `pnpm`バージョンの明示
+``` sh
+# to get the hash of nodejs, run the following command in your terminal:
+node_version=26.13.0
+for platform in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+  case "$platform" in
+    darwin-*) archive_ext=tar.gz ;;
+    linux-*) archive_ext=tar.xz ;;
+  esac
+  nix store prefetch-file --json \
+    "https://nodejs.org/dist/v${node_version}/node-v${node_version}-${platform}.${archive_ext}" |
+    jq --arg platform "$platform" '{platform: $platform, hash: .hash}'
+done
 
-`pnpm`のバージョンが`11.0.0`以降の場合
+# to get the hash of pnpm, run the following command in your terminal:
+pnpm_version=12.17.0
+for platform in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+  nix store prefetch-file --json \
+    "https://github.com/pnpm/pnpm/releases/download/v${pnpm_version}/pnpm-${platform}.tar.gz" |
+    jq --arg platform "$platform" '{platform: $platform, hash: .hash}'
+done
+```
 ``` json
 {
   "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.13.0",
+      "onFail": "error"
+    },
     "packageManager": {
       "name": "pnpm",
-      "version": ">=11.0.0"
-      "onFail": "error"
+      "version": "12.17.0",
+      "onFail": "download"
     }
   }
 }
