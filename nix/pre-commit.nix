@@ -1,4 +1,4 @@
-{ pkgs, git-hooks, system, fixedNode, src }:
+{ pkgs, git-hooks, system, fixedNode, src, enableSemgrep ? true }:
 
 git-hooks.lib.${system}.run {
   inherit src;
@@ -43,7 +43,8 @@ git-hooks.lib.${system}.run {
       pass_filenames = false;
     };
     semgrep = {
-      enable = true;
+      # enable = true;
+      enable = enableSemgrep;
       name = "semgrep";
       entry = "${pkgs.semgrep}/bin/semgrep --config=p/default --config=p/typescript --config=p/javascript --config=p/react --metrics=off --error .";
       pass_filenames = false;

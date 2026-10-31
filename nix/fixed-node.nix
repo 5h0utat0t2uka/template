@@ -77,9 +77,12 @@ let
     };
     nativeBuildInputs = [
       pkgs.gnutar
-    ] ++ pkgs.lib.optionals isLinux [
-      pkgs.autoPatchelfHook
     ];
+    # nativeBuildInputs = [
+    #   pkgs.gnutar
+    # ] ++ pkgs.lib.optionals isLinux [
+    #   pkgs.autoPatchelfHook
+    # ];
     buildInputs = pkgs.lib.optionals isLinux [
       pkgs.stdenv.cc.cc.lib
     ];
