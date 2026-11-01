@@ -75,11 +75,37 @@ git switch -c dev
 
 ## 3. `.envrc`を作成
 ``` sh
-echo 'watch_dir nix
+cat > .envrc <<'EOF'
+watch_dir nix
 watch_file package.json
 watch_file pnpm-lock.yaml
 watch_file pnpm-workspace.yaml
-use flake' >> .envrc
+
+needs_update=true
+if [[ -f nix/runtimes.lock.json ]]; then
+  runtimes_locked="$(nix eval --impure --expr '
+    let
+      engines = (builtins.fromJSON (builtins.readFile ./package.json)).devEngines;
+      lock = builtins.fromJSON (builtins.readFile ./nix/runtimes.lock.json);
+    in
+      engines.runtime.version == lock.node.version
+      && engines.packageManager.version == lock.pnpm.version
+  ')" || {
+    log_error "Failed to validate runtimes.lock.json"
+    exit 1
+  }
+  [[ "$runtimes_locked" == true ]] && needs_update=false
+fi
+if [[ "$needs_update" == true ]]; then
+  log_status "Updating nix/runtimes.lock.json"
+  if ! nix run .#update-runtimes; then
+    log_error "Failed to update-runtimes"
+    exit 1
+  fi
+fi
+
+use flake
+EOF
 ```
 
 ## 4. `.envrc`の許可
@@ -92,33 +118,55 @@ pnpm -v
 ```
 
 ## 5. スキャフォールド  
-フレームワークによってプロジェクトルートの既存ファイルがスキャフォールドを止めるため、下記のコマンドで一時的に既存ファイルを親ディレクトリに退避させる薄いラッパースクリプトを実行   
+**手動取り込み版: `scaffold-app-manual`**
 
-> [!TIP]
-> スクリプトの内容は [`nix/scaffold-app.nix`](../nix/scaffold-app.nix) を参照
+元のプロジェクトと同じ親ディレクトリに一時ディレクトリを作成し、その中で公式 CLI を実行します。依存インストールはスキップし、生成物の取り込み・manifest の統合・Agent Skills の設定は行いません。成功・失敗のどちらでも一時ディレクトリを残し、生成先の絶対パスを表示します。
 
 ``` sh
-# Vite (Select "Ignore files and continue" when prompted)
-nix run .#scaffold-app -- vite
+nix run .#scaffold-app-manual -- vite
+nix run .#scaffold-app-manual -- next
+nix run .#scaffold-app-manual -- astro
+nix run .#scaffold-app-manual -- tanstack
+```
+
+生成された内容を確認して元のプロジェクトに取り込みます。`package.json` は scripts・依存関係などを取り込みつつ、元の `engines`・`devEngines` を保持してください。`pnpm-workspace.yaml` は元の保護設定を保持し、`.gitignore` は両方の内容を統合します。元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリを手動で削除してください。
+
+TanStack は React の `blank` 構成を生成します。Agent Skills が必要な場合は、元のプロジェクトに取り込んで依存インストールを完了してから `pnpm dlx @tanstack/intent@latest install --map` を実行してください。
+
+> [!TIP]
+> スクリプトの内容は [`nix/scaffold-app-manual.nix`](../nix/scaffold-app-manual.nix) を参照
+
+**自動取り込み版: `scaffold-app-auto`（従来の処理）**
+
+初期の `package.json` の `engines`・`devEngines` を保持し、各フレームワークを一時ディレクトリに生成してから統合します。生成された scripts・依存関係を取り込み、元の `pnpm-workspace.yaml` の保護設定で依存解決・インストールを行います。すでに scripts・依存関係・`pnpm-lock.yaml`・`node_modules` があるプロジェクトでは停止します。
+
+生成側の Node.js・pnpm 要件が固定バージョンと両立しない場合は、取り込み前に停止します。依存解決・インストールで失敗した場合は生成物を残すため、原因を解消して失敗した段階から再開してください。スキャフォールド全体の再実行は既存プロジェクトとして拒否されます。
+
+> [!TIP]
+> スクリプトの内容は [`nix/scaffold-app-auto.nix`](../nix/scaffold-app-auto.nix) を参照
+
+``` sh
+# Vite
+nix run .#scaffold-app-auto -- vite
 
 # Next.js
-nix run .#scaffold-app -- next
+nix run .#scaffold-app-auto -- next
 
 # Astro
-nix run .#scaffold-app -- astro
+nix run .#scaffold-app-auto -- astro
 
 # TanStack Start (React / blank)
-nix run .#scaffold-app -- tanstack
+nix run .#scaffold-app-auto -- tanstack
 ```
 
 <!--TanStack Start は [`--blank`](https://tanstack.com/cli/latest/docs/cli-reference) で最小構成を生成し、のアドオンは追加しない  
 依存関係のインストール後、`pnpm dlx @tanstack/intent@latest install --map` で [TanStack Intent](https://tanstack.com/intent/latest/docs/overview) の Agent Skills を設定します。インストール済みライブラリを対象に、`AGENTS.md` などへ Skills の読み込み案内とタスクとの対応付けを追加します。生成中は `--no-install` を使うため、`--intent` による設定はこの段階まで待ちます。Intent の設定が失敗した場合も停止するため、原因を解消してこのコマンドを再実行してください。
 
-TanStack の生成先は一時ディレクトリです。既存ファイルを保持して生成物を取り込み、`.gitignore` は追記で統合します。`package.json` または `pnpm-lock.yaml` がある場合は上書きを避けるため停止します。
+TanStack の生成先は一時ディレクトリです。初期の `package.json` は生成された内容と統合し、他の既存ファイルは保持します。`.gitignore` は追記で統合します。すでに scripts・依存関係・`pnpm-lock.yaml`・`node_modules` がある場合は停止します。
 
 `pnpm-workspace.yaml` は生成されたものを採用せず、このテンプレートの設定を維持します。`allowBuilds` を変更せず、`minimumReleaseAge: 10080`（7日）と `trustPolicy: no-downgrade` を適用します。`semver@6.3.1` の例外は、同ファイルに記載した上流の provenance の問題に対応するものです。
 
-固定した pnpm のバージョンを `packageManager` に設定し、`@types/node` のメジャーバージョンを固定した Node.js に合わせます。その後、Start と Router の v1 から公開後の待機期間を満たすバージョンを解決して完全固定し、ロックファイルを作成して `pnpm install --frozen-lockfile` を実行します。他の依存関係も含め、[pnpm のポリシー](https://pnpm.io/10.x/settings)を満たせなければ設定を緩和せずに停止します。依存解決・インストールで停止した場合、生成済みファイルは残るため、原因を解消してその段階のコマンドから再開してください。
+固定バージョンの指定は初期の `devEngines` に統一し、生成された `packageManager` は除去します。`@types/node` のメジャーバージョンを固定した Node.js に合わせます。その後、Start と Router の v1 から公開後の待機期間を満たすバージョンを解決して完全固定し、ロックファイルを作成して `pnpm install --frozen-lockfile` を実行します。他の依存関係も含め、[pnpm のポリシー](https://pnpm.io/settings)を満たせなければ設定を緩和せずに停止します。依存解決・インストールで停止した場合、生成済みファイルは残るため、原因を解消してその段階のコマンドから再開してください。
 
 TanStack では手順6・7も自動で反映します。生成後は次のコマンドで動作を確認してください。
 
@@ -128,41 +176,23 @@ nix develop -c pnpm run dev
 ```-->
 
 ## 6. `node`, `pnpm`バージョンの明示
-``` sh
-# to get the hash of nodejs, run the following command in your terminal:
-node_version=26.13.0
-for platform in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
-  case "$platform" in
-    darwin-*) archive_ext=tar.gz ;;
-    linux-*) archive_ext=tar.xz ;;
-  esac
-  nix store prefetch-file --json \
-    "https://nodejs.org/dist/v${node_version}/node-v${node_version}-${platform}.${archive_ext}" |
-    jq --arg platform "$platform" '{platform: $platform, hash: .hash}'
-done
-
-# to get the hash of pnpm, run the following command in your terminal:
-pnpm_version=12.17.0
-for platform in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
-  nix store prefetch-file --json \
-    "https://github.com/pnpm/pnpm/releases/download/v${pnpm_version}/pnpm-${platform}.tar.gz" |
-    jq --arg platform "$platform" '{platform: $platform, hash: .hash}'
-done
-```
 ``` json
 {
+  "engines": {
+    "node": "26.x"
+  },
   "devEngines": {
     "runtime": {
       "name": "node",
       "version": "26.13.0",
-      "onFail": "error"
+      "onFail": "warn"
     },
     "packageManager": {
       "name": "pnpm",
       "version": "12.17.0",
       "onFail": "download"
     }
-  }
+  },
 }
 ```
 

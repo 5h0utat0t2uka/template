@@ -1,4 +1,4 @@
-{ pkgs, git-hooks, system, fixedNode, src, enableSemgrep ? true }:
+{ pkgs, git-hooks, system, runtimes, src, enableSemgrep ? true }:
 
 git-hooks.lib.${system}.run {
   inherit src;
@@ -13,7 +13,7 @@ git-hooks.lib.${system}.run {
     node-tests = {
       enable = true;
       name = "node-test";
-      entry = "${fixedNode.pnpm}/bin/pnpm test";
+      entry = "${runtimes.pnpm}/bin/pnpm test";
       files = "^(apps|packages)/.*\\.tsx?$";
       pass_filenames = false;
     };
@@ -43,7 +43,6 @@ git-hooks.lib.${system}.run {
       pass_filenames = false;
     };
     semgrep = {
-      # enable = true;
       enable = enableSemgrep;
       name = "semgrep";
       entry = "${pkgs.semgrep}/bin/semgrep --config=p/default --config=p/typescript --config=p/javascript --config=p/react --metrics=off --error .";

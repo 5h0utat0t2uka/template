@@ -14,33 +14,32 @@
         inherit system;
         overlays = [
           (final: prev: {
-            # Semgrep requires MCP v1, which is incompatible with MCP v2.
+            # Semgrep 1.180.0 requires mcp==1.29.0.
+            # Remove after adopting a nixpkgs revision with corrected dependencies.
             # https://github.com/semgrep/semgrep/blob/v1.180.0/cli/pyproject.toml
             semgrep =
-              if prev.lib.versionOlder prev.python3Packages.mcp.version "2.0" then
-                prev.semgrep
-              else if prev.python3Packages ? mcp_1 then
+              if prev.semgrep.version == "1.180.0" then
                 prev.semgrep.override {
                   mcp = final.python3Packages.mcp_1;
                 }
               else
-                throw "Semgrep requires MCP v1, but python3Packages.mcp_1 is unavailable.";
+                prev.semgrep;
           })
         ];
       };
-      fixedNode = import ./nix/fixed-node.nix { inherit pkgs system; };
-      # preCommit = import ./nix/pre-commit.nix { inherit pkgs git-hooks system fixedNode; src = ./.; };
+      runtimes = import ./nix/runtimes.nix { inherit pkgs system; };
       preCommit = import ./nix/pre-commit.nix {
-        inherit pkgs git-hooks system fixedNode;
+        inherit pkgs git-hooks system runtimes;
         src = ./.;
       };
       preCommitCheck = import ./nix/pre-commit.nix {
-        inherit pkgs git-hooks system fixedNode;
+        inherit pkgs git-hooks system runtimes;
         src = ./.;
         enableSemgrep = false;
       };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
-      scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs fixedNode; };
+      scaffoldAppAuto = import ./nix/scaffold-app-auto.nix { inherit pkgs runtimes; };
+      scaffoldAppManual = import ./nix/scaffold-app-manual.nix { inherit pkgs runtimes; };
     in
     {
       formatter = pkgs.nixfmt;
@@ -49,23 +48,29 @@
         semgrep-package = pkgs.semgrep;
       };
       packages = {
+        update-runtimes = runtimes.update-runtimes;
         create-project = createProject;
-        scaffold-app = scaffoldApp;
+        scaffold-app-auto = scaffoldAppAuto;
+        scaffold-app-manual = scaffoldAppManual;
       };
       apps = {
         create-project = {
           type = "app";
           program = "${createProject}/bin/create-project";
         };
-        scaffold-app = {
+        scaffold-app-auto = {
           type = "app";
-          program = "${scaffoldApp}/bin/scaffold-app";
+          program = "${scaffoldAppAuto}/bin/scaffold-app-auto";
+        };
+        scaffold-app-manual = {
+          type = "app";
+          program = "${scaffoldAppManual}/bin/scaffold-app-manual";
         };
       };
       devShells.default = pkgs.mkShell {
         packages = [
-          fixedNode.nodejs
-          fixedNode.pnpm
+          runtimes.nodejs
+          runtimes.pnpm
           pkgs.age
           pkgs.betterleaks
           pkgs.prek
@@ -82,8 +87,8 @@
       };
       devShells.ci = pkgs.mkShell {
         packages = [
-          fixedNode.nodejs
-          fixedNode.pnpm
+          runtimes.nodejs
+          runtimes.pnpm
         ];
       };
     }

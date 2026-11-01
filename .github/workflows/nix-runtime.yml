@@ -6,6 +6,7 @@ on:
   #   branches:
   #     - main
   #   paths:
+  #     - "package.json"
   #     - "flake.nix"
   #     - "flake.lock"
   #     - "nix/**"
@@ -29,10 +30,12 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Node.js and pnpm
+      - name: Verify runtimes.lock.json
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          nix develop .#ci -c node --version
-          nix develop .#ci -c pnpm --version
+          nix run .#update-runtimes
+          git diff --exit-code nix/runtimes.lock.json
 
       - name: Install dependencies
         run: nix develop .#ci -c pnpm install --frozen-lockfile
