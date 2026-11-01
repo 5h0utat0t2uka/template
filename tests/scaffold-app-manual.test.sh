@@ -40,6 +40,8 @@ pnpm() {
       ;;
     *) return 89 ;;
   esac
+  # Absolute targets cause nested paths with CLIs that join cwd and target.
+  [ "$target" = ./example-app ] || return 90
   if [ "$TEST_SCENARIO" = cancelled ]; then return 0; fi
   mkdir -p "$target"
   printf '{"name":"generated"}\n' > "$target/package.json"
@@ -61,16 +63,16 @@ for scenario in vite next astro tanstack failure cancelled invalid; do
   case "$scenario" in failure|cancelled) framework=tanstack ;; esac
   status=0
   (cd "$project" && bash "$script" "$framework") > "$case_dir/output" 2>&1 || status=$?
-  diff -r "$case_dir/before" "$project"
+  diff -r -x '.scaffold.*' "$case_dir/before" "$project"
   case "$scenario" in
     invalid)
       [ "$status" -eq 1 ]
       [ ! -e "$TEST_LOG" ]
-      [ -z "$(find "$case_dir" -name '.example-app-scaffold.*' -print)" ]
+      [ -z "$(find "$project" -name '.scaffold.*' -print)" ]
       ;;
     *)
       work_dir="$(head -n 1 "$TEST_LOG")"
-      [ "$(dirname "$work_dir")" = "$case_dir" ]
+      [ "$(dirname "$work_dir")" = "$project" ]
       [ -d "$work_dir" ]
       [ "$(wc -l < "$TEST_LOG" | tr -d ' ')" -eq 2 ]
       grep -Fq "Generated files (retained): $work_dir/example-app" "$case_dir/output"
@@ -80,6 +82,7 @@ for scenario in vite next astro tanstack failure cancelled invalid; do
         cancelled) [ "$status" -eq 1 ]; [ ! -e "$work_dir/example-app/package.json" ] ;;
         *) [ "$status" -eq 0 ]; [ -f "$work_dir/example-app/package.json" ] ;;
       esac
+      [ "$(find "$work_dir" -name package.json | wc -l | tr -d ' ')" -le 1 ]
       ;;
   esac
   printf 'PASS: %s\n' "$scenario"

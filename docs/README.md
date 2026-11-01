@@ -110,6 +110,9 @@ EOF
 
 ## 4. `.envrc`の許可
 ``` sh
+git add -N nix/runtimes.lock.json
+```
+``` sh
 direnv allow
 
 # node と pnpm のバージョン確認
@@ -120,7 +123,7 @@ pnpm -v
 ## 5. スキャフォールド  
 **手動取り込み版: `scaffold-app-manual`**
 
-元のプロジェクトと同じ親ディレクトリに一時ディレクトリを作成し、その中で公式 CLI を実行します。依存インストールはスキップし、生成物の取り込み・manifest の統合・Agent Skills の設定は行いません。成功・失敗のどちらでも一時ディレクトリを残し、生成先の絶対パスを表示します。
+プロジェクト内に `.scaffold.XXXXXX` という一時ディレクトリを作成し、その直下に元のプロジェクト名で生成します（例: `template/.scaffold.XXXXXX/template/package.json`）。CLI には相対パスを渡します。依存インストールはスキップし、生成物の取り込み・manifest の統合・Agent Skills の設定は行いません。成功・失敗のどちらでも一時ディレクトリを残し、生成先の絶対パスを表示します。
 
 ``` sh
 nix run .#scaffold-app-manual -- vite
