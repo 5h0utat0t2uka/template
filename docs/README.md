@@ -26,7 +26,7 @@ This template includes basic security measures:
 
 
 ## 1. リポジトリを作成
-クローン先のディレクトリに移動
+クローン先の親ディレクトリに移動  
 ``` sh
 cd path/to/parent-directory
 ```
@@ -46,7 +46,7 @@ nix run github:5h0utat0t2uka/template#create-project -- OWNER REPO VISIBILITY CO
 | `COPILOT_REVIEW` | optional | `false`  | GitHub Copilot のレビュー可否を `true`もしくは`false` で指定 |
 
 > [!TIP]
-> スクリプトの内容は [`nix/create-project.nix`](../nix/create-project.nix) を参照
+> スクリプトの内容は [`nix/create-project.nix`](../nix/create-project.nix)
 
 ## 2. プロジェクトの設定
 ``` sh
@@ -72,12 +72,9 @@ cd REPO
 | [`ci.yml`](../.github/workflows/ci.yml)                | `main` ブランチへのPR | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
 
 ## 3. `node`, `pnpm`バージョンの明示
-ランタイムのバージョンは `package.json` のこの内容を参照して `nix/runtimes.nix` から `runtimes.lock.json` を作成して固定する  
+ランタイムのバージョンは `package.json` で固定する  
 ``` json
 {
-  "engines": {
-    "node": "26.x"
-  },
   "devEngines": {
     "runtime": {
       "name": "node",
@@ -94,7 +91,7 @@ cd REPO
 ```
 
 ## 4. `.envrc`を作成
-これにより `nix/runtimes.lock.json` が存在しない場合、もしくは `package.json` の `devEngines` のバージョンがロックファイルと異なる場合に、ハッシュの取得・計算を行い `nix/runtimes.lock.json` を更新する  
+これにより `nix/runtimes.lock.json` が存在しない場合、もしくは `package.json` の `devEngines` のバージョンがロックファイルと異なる場合に、自動でハッシュの取得・計算を行いランタイムが更新される  
 ``` sh
 cat > .envrc <<'EOF'
 watch_dir nix
@@ -130,21 +127,24 @@ EOF
 ```
 
 ## 5. `.envrc`の許可
-`nix/runtimes.lock.json` をインデックスに追加  
+`nix/runtimes.lock.json` を生成  
 ``` sh
 nix run .#update-runtimes
+```
+
+`nix/runtimes.lock.json` をインデックスに追加  
+``` sh
 git add -N nix/runtimes.lock.json
 ```
 
-`node` と `pnpm` のバージョン確認  
+`.envrc`を許可  
 ``` sh
 direnv allow
-node -v
-pnpm -v
 ```
 
 ## 6. スキャフォールド  
 各フレームワークはディレクトリ内に既存のファイルがある場合停止するため、プロジェクト内に一時ディレクトリを作成し、その直下に元のプロジェクト名で生成する  
+その後、生成された内容を調整して元のプロジェクトに取り込む  
 ``` sh
 nix run .#scaffold-app -- vite
 nix run .#scaffold-app -- next
@@ -152,12 +152,11 @@ nix run .#scaffold-app -- astro
 nix run .#scaffold-app -- tanstack
 ```
 
-生成された内容を確認して、調整を行い元のプロジェクトに取り込み、元々の`package.json` に関してはフレームワークの依存関係などを取り込みつつ `engines`, `devEngines` は保持する  
-`pnpm-workspace.yaml`, `.gitignore` は両方の内容を統合し、元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリを手動で削除する  
+元の`package.json` に関しては、フレームワークの依存関係などを取り込みつつ `engines`, `devEngines` は保持し、`pnpm-workspace.yaml`, `.gitignore` は両方の内容を統合し、元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリは手動で削除する  
 
 > [!TIP]
-> スクリプトの内容は [`nix/scaffold-app.nix`](../nix/scaffold-app.nix) を参照  
 > 一時ディレクトリは `.scaffold.XXXXXX/template` のような名前で作成  
+> スクリプトの内容は [`nix/scaffold-app.nix`](../nix/scaffold-app.nix)  
 
 ## 7. リモートに反映  
 - `dev`にコミットしてプッシュ  
@@ -171,6 +170,8 @@ git push -u origin dev
 ``` sh
 gh pr create --base main --head dev --fill
 gh pr checks --watch
+```
+``` sh
 gh pr merge --squash --delete-branch
 ```
 
@@ -180,6 +181,7 @@ git switch main
 git pull --ff-only --prune origin main
 git fetch --prune origin
 ```
+
 ``` sh
 git switch -c <branch-name> origin/main
 ```
