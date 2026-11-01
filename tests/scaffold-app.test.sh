@@ -3,13 +3,13 @@ set -euo pipefail
 
 # Mock only pnpm; exercise the extracted shell with real filesystem operations.
 repo_dir="$(cd "$(dirname "$0")/.." && pwd)"
-test_root="$(mktemp -d "$repo_dir/.scaffold-manual-test.XXXXXX")"
+test_root="$(mktemp -d "$repo_dir/.scaffold-test.XXXXXX")"
 trap 'rm -rf "$test_root"' EXIT
 script="$test_root/scaffold.sh"
 awk '/^  text = / { body = 1; next }
      body && /^  \047\047;/ { exit }
      body { gsub(/\047\047[$][{]/, "${"); print }' \
-  "$repo_dir/nix/scaffold-app-manual.nix" > "$script"
+  "$repo_dir/nix/scaffold-app.nix" > "$script"
 bash -n "$script"
 
 pnpm() {

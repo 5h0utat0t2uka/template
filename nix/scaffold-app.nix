@@ -1,7 +1,7 @@
 { pkgs, runtimes }:
 
 pkgs.writeShellApplication {
-  name = "scaffold-app-manual";
+  name = "scaffold-app";
   runtimeInputs = [
     runtimes.nodejs
     runtimes.pnpm
@@ -11,7 +11,7 @@ pkgs.writeShellApplication {
     set -euo pipefail
     FRAMEWORK="''${1:-}"
     if [ "$#" -ne 1 ]; then
-      echo "Usage: nix run .#scaffold-app-manual -- <vite|next|astro|tanstack>" >&2
+      echo "Usage: nix run .#scaffold-app -- <vite|next|astro|tanstack>" >&2
       exit 1
     fi
     case "$FRAMEWORK" in

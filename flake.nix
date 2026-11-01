@@ -38,8 +38,7 @@
         enableSemgrep = false;
       };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
-      scaffoldAppAuto = import ./nix/scaffold-app-auto.nix { inherit pkgs runtimes; };
-      scaffoldAppManual = import ./nix/scaffold-app-manual.nix { inherit pkgs runtimes; };
+      scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs runtimes; };
     in
     {
       formatter = pkgs.nixfmt;
@@ -50,21 +49,16 @@
       packages = {
         update-runtimes = runtimes.update-runtimes;
         create-project = createProject;
-        scaffold-app-auto = scaffoldAppAuto;
-        scaffold-app-manual = scaffoldAppManual;
+        scaffold-app = scaffoldApp;
       };
       apps = {
         create-project = {
           type = "app";
           program = "${createProject}/bin/create-project";
         };
-        scaffold-app-auto = {
+        scaffold-app = {
           type = "app";
-          program = "${scaffoldAppAuto}/bin/scaffold-app-auto";
-        };
-        scaffold-app-manual = {
-          type = "app";
-          program = "${scaffoldAppManual}/bin/scaffold-app-manual";
+          program = "${scaffoldApp}/bin/scaffold-app";
         };
       };
       devShells.default = pkgs.mkShell {
