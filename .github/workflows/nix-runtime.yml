@@ -10,6 +10,7 @@ on:
   #     - "flake.nix"
   #     - "flake.lock"
   #     - "nix/**"
+  #     - "scripts/update-runtimes.sh"
   #     - ".github/workflows/nix-runtime.yml"
 
 permissions:

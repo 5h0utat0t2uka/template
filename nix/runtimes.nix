@@ -84,7 +84,7 @@ let
       pkgs.gnupg
       pkgs.jq
     ];
-    text = builtins.readFile ./update-runtimes.sh;
+    text = builtins.readFile ../scripts/update-runtimes.sh;
   };
 in
 {

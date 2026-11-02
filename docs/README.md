@@ -72,9 +72,13 @@ cd REPO
 | [`ci.yml`](../.github/workflows/ci.yml)                | `main` ブランチへのPR | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
 
 ## 3. `node`, `pnpm`バージョンの明示
-ランタイムのバージョンは `package.json` で固定する  
+ランタイムとパッケージマネージャのバージョンは `package.json` で固定する  
 ``` json
 {
+  "engines": {
+    "node": "26.x",
+    "pnpm": "12.x"
+  },
   "devEngines": {
     "runtime": {
       "name": "node",
@@ -91,10 +95,11 @@ cd REPO
 ```
 
 ## 4. `.envrc`を作成
-これにより `nix/runtimes.lock.json` が存在しない場合、もしくは `package.json` の `devEngines` のバージョンがロックファイルと異なる場合に、自動でハッシュの取得・計算を行いランタイムが更新される  
+これにより `nix/runtimes.lock.json` が存在しない場合、もしくは `package.json` の `devEngines` のバージョンがロックファイルと異なる場合に、自動でハッシュの取得・計算を行いランタイムとパッケージマネージャが更新される  
 ``` sh
 cat > .envrc <<'EOF'
 watch_dir nix
+watch_file scripts/update-runtimes.sh
 watch_file package.json
 watch_file pnpm-lock.yaml
 watch_file pnpm-workspace.yaml
@@ -152,7 +157,7 @@ nix run .#scaffold-app -- astro
 nix run .#scaffold-app -- tanstack
 ```
 
-元の`package.json` に関しては、フレームワークの依存関係などを取り込みつつ `engines`, `devEngines` は保持し、`pnpm-workspace.yaml`, `.gitignore` は両方の内容を統合し、元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリは手動で削除する  
+既存の`package.json` に関しては、フレームワークの依存関係などを取り込みつつ `engines`, `devEngines` の内容は保持し、`pnpm-workspace.yaml`, `.gitignore` は両方の内容を統合して、元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリは手動で削除する  
 
 > [!TIP]
 > 一時ディレクトリは `.scaffold.XXXXXX/template` のような名前で作成  
@@ -170,8 +175,6 @@ git push -u origin dev
 ``` sh
 gh pr create --base main --head dev --fill
 gh pr checks --watch
-```
-``` sh
 gh pr merge --squash --delete-branch
 ```
 

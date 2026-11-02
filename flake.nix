@@ -28,15 +28,8 @@
         ];
       };
       runtimes = import ./nix/runtimes.nix { inherit pkgs system; };
-      preCommit = import ./nix/pre-commit.nix {
-        inherit pkgs git-hooks system runtimes;
-        src = ./.;
-      };
-      preCommitCheck = import ./nix/pre-commit.nix {
-        inherit pkgs git-hooks system runtimes;
-        src = ./.;
-        enableSemgrep = false;
-      };
+      preCommit = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; };
+      preCommitCheck = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; enableSemgrep = false; };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
       scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs runtimes; };
     in
