@@ -29,7 +29,7 @@
       };
       runtimes = import ./nix/runtimes.nix { inherit pkgs system; };
       preCommit = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; };
-      preCommitCheck = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; enableSemgrep = false; };
+      preCommitCheck = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; forFlakeCheck = true; };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
       scaffoldApp = import ./nix/scaffold-app.nix { inherit pkgs runtimes; };
     in
@@ -59,12 +59,8 @@
           runtimes.nodejs
           runtimes.pnpm
           pkgs.age
-          pkgs.betterleaks
-          pkgs.prek
-          pkgs.semgrep
           pkgs.sops
           pkgs.typescript-language-server
-          pkgs.zizmor
         ] ++ preCommit.enabledPackages;
         shellHook = ''
           ${preCommit.shellHook}

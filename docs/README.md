@@ -69,7 +69,7 @@ cd REPO
 | File | Schedule | Description | Auto merge |
 |:---|:---|:---|:---|
 | [`dependabot.yml`](../.github/dependabot.yml.templrte) | 毎週日曜日の AM 04:00 | GitHub Actions, npm, flake.lock のバージョンを更新してPR作成 | 未設定 |
-| [`ci.yml`](../.github/workflows/ci.yml)                | `main` ブランチへのPR | - 追加・更新された依存関係に対してOSSVデータベースから脆弱性を確認<br>- GitHub ActionsのLintや、シークレットの漏洩を確認<br>- `pnpm install --frozen-lockfile`を行い`lint`, `build`まで実行 | 未設定 |
+| [`ci.yml`](../.github/workflows/ci.yml) | `main` ブランチへのPR | OSV で依存関係の脆弱性を確認。Betterleaks でチェックアウトしたソース全体を、zizmor で GitHub Actions を検査。その後、依存関係をインストールし、lint（設定時）と build を実行 | 未設定 |
 
 ## 3. `node`, `pnpm`バージョンの明示
 ランタイムとパッケージマネージャのバージョンは `package.json` で固定する  
