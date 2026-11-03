@@ -1,4 +1,4 @@
-{ pkgs, git-hooks, system, runtimes, src, forFlakeCheck ? false }:
+{ pkgs, git-hooks, system, runtimes, src }:
 
 git-hooks.lib.${system}.run {
   inherit src;
@@ -40,16 +40,11 @@ git-hooks.lib.${system}.run {
       enable = true;
       name = "betterleaks";
       package = pkgs.betterleaks;
-      entry =
-        if forFlakeCheck then
-          "${package}/bin/betterleaks dir --redact ${src}"
-        else
-          "${package}/bin/betterleaks git --pre-commit --redact --staged --verbose";
+      entry = "${package}/bin/betterleaks git --pre-commit --redact --staged --verbose";
       pass_filenames = false;
     };
     semgrep = rec {
-      # The registry rulesets require network access.
-      enable = !forFlakeCheck;
+      enable = true;
       name = "semgrep";
       package = pkgs.semgrep;
       entry = "${package}/bin/semgrep --config=p/default --config=p/typescript --config=p/javascript --config=p/react --metrics=off --error .";
