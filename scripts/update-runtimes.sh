@@ -1,13 +1,14 @@
 # shellcheck shell=bash
 # package.json の devEngines で指定した node, pnpm を検証して nix/runtimes.lock.json（system ごとの URL, SRI）を生成する。
 #   node: nodejs/release-keys の keyring で SHASUMS256.txt.asc の署名を検証し、その値を採用
-#   pnpm: GitHub artifact attestation（pnpm/pnpm の release.yml・該当タグ）を検証し、検証済みファイルのハッシュを採用
+#   pnpm: npm レジストリの公開日時が minimumReleaseAge を満たすことを確認して GitHub artifact attestation を検証し、検証済みファイルのハッシュを採用
 
 set -euo pipefail
 shopt -s inherit_errexit
 
 root="${1:-.}"
 manifest="$root/package.json"
+workspace="$root/pnpm-workspace.yaml"
 lockfile="$root/nix/runtimes.lock.json"
 platforms=(
   "aarch64-darwin darwin-arm64 tar.gz"
@@ -18,28 +19,60 @@ platforms=(
 
 fetch() {
   curl --proto '=https' --proto-redir '=https' --tlsv1.2 -fsSL -o "$1" "$2" || {
-    echo "error: 取得できません: $2" >&2
-    return 1
-  }
-}
-read_version() {
-  jq -er "$1" "$manifest" || {
-    echo "error: package.json から読めません: $1" >&2
+    echo "error: Failed to download $2" >&2
     return 1
   }
 }
 
-node_version="$(read_version '.devEngines.runtime | select(.name == "node") | .version')"
-pnpm_version="$(read_version '.devEngines.packageManager | select(.name == "pnpm") | .version')"
+read_version() {
+  jq -er --arg key "$1" --arg name "$2" \
+    '.devEngines[$key] | select(.name == $name) | .version' "$manifest" || {
+    echo "error: Cannot read the $2 version from devEngines.$1 in $manifest" >&2
+    return 1
+  }
+}
+
+node_version="$(read_version runtime node)"
+pnpm_version="$(read_version packageManager pnpm)"
 for version in "$node_version" "$pnpm_version"; do
   if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "error: devEngines の version は x.y.z で完全指定してください（範囲指定は不可）: $version" >&2
+    echo "error: Expected an exact x.y.z version in devEngines, got '$version'" >&2
     exit 1
   fi
 done
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
+
+# pnpm: minimumReleaseAge（分）を満たすバージョンだけを固定する
+# 判定は pnpm と同じく npm レジストリの公開日時で行う
+# https://pnpm.io/config-includes#bootconfig
+min_age=1440
+if [[ -f "$workspace" ]]; then
+  min_age="$(yq -o=json '.' "$workspace" | jq -e --argjson default "$min_age" '
+    first((.bootConfig.minimumReleaseAge, .minimumReleaseAge, $default) | select(. != null))
+    | if . == 0 then 0
+      elif type == "number" and . > 0 then .
+      else error("minimumReleaseAge must be a non-negative number of minutes")
+      end
+  ')"
+fi
+if [[ "$min_age" != 0 ]]; then
+  fetch "$work/pnpm-packument.json" "https://registry.npmjs.org/pnpm"
+  published="$(jq -er --arg v "$pnpm_version" '
+    if (.versions | type) != "object" then error("Invalid npm metadata for pnpm")
+    elif .versions[$v] == null then error("pnpm@\($v) was not found on npm")
+    else (.time[$v] | strings | select(length > 0)) // error("Missing publish time for pnpm@\($v)")
+    end
+  ' "$work/pnpm-packument.json")"
+  published_epoch="$(date --date="$published" +%s.%N)"
+  if ! jq -en --argjson published "$published_epoch" --argjson min "$min_age" \
+    'now - $published >= $min * 60' >/dev/null; then
+    echo "error: pnpm@$pnpm_version was published at $published; minimumReleaseAge is $min_age minutes" >&2
+    exit 1
+  fi
+fi
+
 # 利用者の GnuPG 設定・鍵に検証結果を左右させない
 export GNUPGHOME="$work/gnupg"
 mkdir -m 700 "$GNUPGHOME"
@@ -57,7 +90,7 @@ for entry in "${platforms[@]}"; do
   node_file="node-v$node_version-$slug.$ext"
   node_hex="$(awk -v f="$node_file" '$2 == f { print $1 }' "$work/SHASUMS256.txt")"
   if [[ ! "$node_hex" =~ ^[0-9a-f]{64}$ ]]; then
-    echo "error: 署名済み SHASUMS256.txt に $node_file がありません" >&2
+    echo "error: No valid signed checksum for $node_file" >&2
     exit 1
   fi
   node_hash="$(nix hash convert --hash-algo sha256 --to sri "$node_hex")"
@@ -83,4 +116,4 @@ jq -n \
   --arg pv "$pnpm_version" --argjson pp "$pnpm_platforms" \
   '{node: {version: $nv, platforms: $np}, pnpm: {version: $pv, platforms: $pp}}' >"$lockfile.tmp"
 mv "$lockfile.tmp" "$lockfile"
-echo "updated: $lockfile (node $node_version, pnpm $pnpm_version)" >&2
+echo "Updated $lockfile (Node.js $node_version, pnpm $pnpm_version)" >&2

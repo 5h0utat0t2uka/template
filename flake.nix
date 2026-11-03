@@ -39,6 +39,7 @@
       };
       packages = {
         update-runtimes = runtimes.update-runtimes;
+        prek = preCommit.prek;
         create-project = createProject;
         scaffold-app = scaffoldApp;
       };
@@ -57,6 +58,7 @@
           runtimes.nodejs
           runtimes.pnpm
           pkgs.age
+          pkgs.just
           pkgs.sops
           pkgs.typescript-language-server
         ] ++ preCommit.enabledPackages;

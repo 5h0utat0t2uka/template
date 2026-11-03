@@ -64,14 +64,21 @@ cd REPO
   gh label create "nix" --color "#4D6FB7" 
   ```
 
-テンプレートのDependabot, CIの設定内容は下記  
+テンプレートの Dependabot, CI の設定内容は下記  
 
 | File | Schedule | Description | Auto merge |
 |:---|:---|:---|:---|
 | [`dependabot.yml`](../.github/dependabot.yml.templrte) | 毎週日曜日の AM 04:00 | GitHub Actions, npm, flake.lock のバージョンを更新してPR作成 | 未設定 |
 | [`ci.yml`](../.github/workflows/ci.yml) | `main` ブランチへのPR | OSV で `pnpm-lock.yaml` の依存関係をスキャン。別のジョブで `pnpm install --frozen-lockfile`、プロジェクトの lint（定義時）、`pnpm build` を順に実行 | 未設定 |
 
-Betterleaks・Semgrep・zizmor などの [pre-commit フック](../nix/pre-commit.nix) は、ローカルのコミット時に prek が実行します。
+[justfile](../justfile) に定義したコマンドの内容は下記  
+
+| Command | Description |
+|:---|:---|
+| `just runtime` | `package.json` の指定に従って `nix/runtimes.lock.json` を再生成する |
+| `just prek` | pre-commit フックをローカルで `--all-files` 付きで実行する |
+
+Betterleaks, Semgrep, zizmor などの [pre-commit フック](../nix/pre-commit.nix) は、ローカルのコミット時に prek を実行  
 
 ## 3. `node`, `pnpm`バージョンの明示
 ランタイムとパッケージマネージャのバージョンは `package.json` で固定する  
@@ -101,7 +108,6 @@ Betterleaks・Semgrep・zizmor などの [pre-commit フック](../nix/pre-commi
 ``` sh
 cat > .envrc <<'EOF'
 watch_dir nix
-watch_file scripts/update-runtimes.sh
 watch_file package.json
 watch_file pnpm-lock.yaml
 watch_file pnpm-workspace.yaml
@@ -136,7 +142,7 @@ EOF
 ## 5. `.envrc`の許可
 `nix/runtimes.lock.json` を生成  
 ``` sh
-nix run .#update-runtimes
+just runtime
 ```
 
 `nix/runtimes.lock.json` をインデックスに追加  

@@ -12,10 +12,10 @@ let
     let
       entry = lock.${name};
       platform =
-        entry.platforms.${system} or (throw "${name}: ${system} が runtimes.lock.json にありません");
+        entry.platforms.${system} or (throw "No ${name} entry for ${system} in runtimes.lock.json");
     in
     if entry.version != version then
-      throw "${name}: package.json は ${version}、runtimes.lock.json は ${entry.version} です。nix run .#update-runtimes を実行してください"
+      throw "${name}: package.json specifies ${version}, but runtimes.lock.json has ${entry.version}. Run 'nix run .#update-runtimes'."
     else
       pkgs.fetchurl { inherit (platform) url hash; };
 
@@ -83,6 +83,7 @@ let
       pkgs.gh
       pkgs.gnupg
       pkgs.jq
+      pkgs.yq-go
     ];
     text = builtins.readFile ../scripts/update-runtimes.sh;
   };

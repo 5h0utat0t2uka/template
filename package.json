@@ -18,8 +18,5 @@
       "version": "12.17.0",
       "onFail": "download"
     }
-  },
-  "scripts": {
-    "check:pre-commit": "nix develop -c prek run --all-files"
   }
 }
