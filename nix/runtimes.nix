@@ -67,8 +67,7 @@ let
       tar -xzf "$src" -C "$out/libexec"
       makeWrapper "$out/libexec/pnpm" "$out/bin/pnpm" \
         --prefix PATH : "${nodejs}/bin" \
-        --set pnpm_config_pm_on_fail error \
-        --set pnpm_config_runtime_on_fail error
+        --set pnpm_config_pm_on_fail error
     '';
   };
 
