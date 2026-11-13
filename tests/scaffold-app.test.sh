@@ -22,9 +22,8 @@ pnpm() {
       target="$3"
       ;;
     'create next-app@latest')
-      [[ " $* " == *' --skip-install '* ]] || return 81
-      [[ " $* " == *' --disable-git '* ]] || return 82
-      [[ " $* " == *' --no-tailwind '* ]] || return 83
+      # Pass only the target so create-next-app keeps its interactive prompts.
+      [ "$#" -eq 3 ] || return 81
       target="$3"
       ;;
     'create astro@latest')

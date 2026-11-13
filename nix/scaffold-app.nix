@@ -38,8 +38,8 @@ pkgs.writeShellApplication {
         pnpm create vite@latest "./$PROJECT_NAME" --no-immediate
         ;;
       next)
-        pnpm create next-app@latest "./$PROJECT_NAME" \
-          --use-pnpm --skip-install --disable-git --no-tailwind
+        # create-next-app skips prompts when any --option is provided.
+        pnpm create next-app@latest "./$PROJECT_NAME"
         ;;
       astro)
         pnpm create astro@latest "./$PROJECT_NAME" --no-install --no-git

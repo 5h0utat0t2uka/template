@@ -165,6 +165,8 @@ nix run .#scaffold-app -- astro
 nix run .#scaffold-app -- tanstack
 ```
 
+Next.js は標準の対話で構成を選択し、生成先の一時ディレクトリ内で依存もインストールする。各項目を選ぶには `No, customize settings` を選択し、Tailwind CSS の質問には `No` を選択する。
+
 既存の`package.json` に関しては、フレームワークの依存関係などを取り込みつつ `engines`, `devEngines` の内容は保持し、`pnpm-workspace.yaml`, `.gitignore` は両方の内容を統合して、元のプロジェクトで依存インストールとビルドを確認してから、一時ディレクトリは手動で削除する  
 
 > [!TIP]
