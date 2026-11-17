@@ -1,8 +1,12 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["oxc", "typescript", "unicorn", "react", "nextjs", "jsx-a11y"],
+  "categories": {
+    "correctness": "error"
+  },
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/no-danger": "error",
+    "jsx-a11y/no-redundant-roles": ["error", { "ul": ["list"], "ol": ["list"] }],
+    "jsx-a11y/prefer-tag-over-role": "off"
   }
 }

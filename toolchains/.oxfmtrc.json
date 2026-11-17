@@ -4,5 +4,9 @@
   "useTabs": false,
   "semi": true,
   "singleQuote": false,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "sortImports": {
+    "newlinesBetween": false
+  },
+  "sortPackageJson": false
 }

@@ -11,6 +11,10 @@ let
         enable = true;
         args = [ "--maxkb=500" ];
       };
+      nixfmt = {
+        enable = true;
+        package = pkgs.nixfmt;
+      };
       node-tests = {
         enable = false;
         name = "node-test";
@@ -18,6 +22,28 @@ let
         files = "^(apps|packages)/.*\\.tsx?$";
         pass_filenames = false;
       };
+
+      # oxlint = {
+      #   enable = true;
+      #   package = pkgs.oxlint;
+      #   settings.fix = [ "safe" ];
+      # };
+
+      # oxfmt = {
+      #   enable = true;
+      #   package = pkgs.oxfmt;
+      #   after = [ "oxlint" ];
+      #   settings.mode = "write";
+      #   types_or = [
+      #     "javascript"
+      #     "jsx"
+      #     "ts"
+      #     "tsx"
+      #     "css"
+      #     "json"
+      #   ];
+      # };
+
       # biome = {
       #   enable = true;
       #   name = "biome";
@@ -25,18 +51,7 @@ let
       #   entry = "${pkgs.biome}/bin/biome check --write --files-ignore-unknown=true --no-errors-on-unmatched";
       #   pass_filenames = true;
       # };
-      # oxfmt = {
-      #   enable = true;
-      #   package = pkgs.oxfmt;
-      #   settings.mode = "write";
-      # };
-      # oxlint = {
-      #   enable = true;
-      #   name = "oxlint";
-      #   package = pkgs.oxlint;
-      #   entry = "${pkgs.oxlint}/bin/oxlint";
-      #   files = "\\.(js|jsx|mjs|cjs|ts|tsx|mts|cts)$";
-      # };
+
       betterleaks = rec {
         enable = true;
         name = "betterleaks";

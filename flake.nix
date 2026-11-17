@@ -10,20 +10,6 @@
   outputs = { nixpkgs, flake-utils, git-hooks, ... }: flake-utils.lib.eachDefaultSystem (system:
     let
       pkgs = import nixpkgs { inherit system; };
-      # pkgs = import nixpkgs {
-      #   inherit system;
-      #   overlays = [
-      #     (final: prev: {
-      #       semgrep =
-      #         if prev.semgrep.version == "1.180.0" then
-      #           prev.semgrep.override {
-      #             mcp = final.python3Packages.mcp_1;
-      #           }
-      #         else
-      #           prev.semgrep;
-      #     })
-      #   ];
-      # };
       runtimes = import ./nix/runtimes.nix { inherit pkgs system; };
       preCommit = import ./nix/pre-commit.nix { inherit pkgs git-hooks system runtimes; src = ./.; };
       createProject = import ./nix/create-project.nix { inherit pkgs; };
